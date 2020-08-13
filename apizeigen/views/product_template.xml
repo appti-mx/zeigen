@@ -8,6 +8,7 @@
             <notebook position="inside">
                 <page string="Sitio WEB">
                     <group string="Data">
+                        <field name="sitio"/>
                         <field name="web_name"/>
                         <field name="short_description"/>
                         <field name="full_description" />
