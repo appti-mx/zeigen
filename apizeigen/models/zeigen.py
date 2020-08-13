@@ -35,7 +35,7 @@ class ProductTemplate(models.Model):
     web_name = fields.Char(string='Nombre del producto', related='name')
     short_description = fields.Char(string='Descripción corta del producto', related='name')
     full_description = fields.Char(string='Descripción larga del producto')
-    sku = fields.Char(string='sku', required=True)
+    sku = fields.Char(string='sku')
     stock_quantity = fields.Float(string='stock_quantity')
     price = fields.Float(string='Precio de Lista del producto', related='list_price')
     old_price = fields.Float(string='Precio anterior del producto')
