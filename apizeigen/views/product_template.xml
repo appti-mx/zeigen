@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <odoo>
+    <record model="ir.ui.view" id="inherit_product_template_form_view">
+        <field name="name">inherit_product_template</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="Sitio WEB">
+                    <group string="Data">
+                        <field name="web_name"/>
+                        <field name="short_description"/>
+                        <field name="full_description" />
+                        <field name="sku" />
+                        <field name="stock_quantity" />
+                        <field name="price" />
+                        <field name="old_price" />
+                        <field name="product_cost" />
+                        <field name="special_price" />
+                        <field name="maximum_customer_entered_price" />
+                        <field name="baseprice_amoun" />
+                        <field name="weight" />
+                        <field name="length" />
+                        <field name="width" />
+                        <field name="height" />
+                        <field name="product_type" />
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+</odoo>
