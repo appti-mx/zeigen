@@ -17,14 +17,15 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.1',
+    'version': '0.2',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'contacts',],
+    'depends': ['base','contacts','stock','product'],
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
+        'views/product_template.xml',
         'views/zeigen.xml',
+        'security/ir.model.access.csv',
     ],
 }
