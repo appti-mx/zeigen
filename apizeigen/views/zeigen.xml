@@ -1,37 +1,51 @@
-<?xml version="1.0" encoding="UTF-8"?>
- <odoo>
- <!-- override the automatically generated list view for courses -->
-    <record model="ir.ui.view" id="api_zeigen_tree_view">
-        <field name="name">api.zeigen.tree</field>
-        <field name="model">api.zeigen</field>
-        <field name="arch" type="xml">
-            <tree string="Course Tree">
-                <field name="name"/>
-            </tree>
-        </field>
-    </record>
+<?xml version="1.0" encoding="utf-8"?>
 
-<!-- session form view -->
-    <record model="ir.ui.view" id="api_zeigen_view">
-        <field name="name">api.zeigen.form</field>
-        <field name="model">api.zeigen</field>
-        <field name="arch" type="xml">
-            <form string="Session Form">
-                <sheet>
-                    <group>
-                        <field name="name"/>
-                    </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
+<odoo>
+    <data>
+        <record id="api_zeigen_tree_view" model="ir.ui.view">
+            <field name="name">api.zeigen.tree.view</field>
+            <field name="model">api.zeigen</field>
+            <field name="arch" type="xml">
+                <tree string="API">
+                    <field name = "user" />
+                    <field name = "password" />
+                    <field name = "url" />
+                </tree>
+            </field>
+        </record>
 
-    <record model="ir.actions.act_window" id="api_zeigen_action">
-        <field name="name">API</field>
-        <field name="res_model">api.zeigen</field>
-        <field name="view_mode">tree,form</field>
-    </record>
 
-    <menuitem id="api_zeigen" name="API"/>
-    <menuitem id="api_zeigen_menu" name="API" parent="api_zeigen" action="api_zeigen_action"/>
+        <record id="api_zeigen_form_view" model="ir.ui.view">
+            <field name="name">api.zeigen.form.view</field>
+            <field name="model">api.zeigen</field>
+            <field name="arch" type="xml">
+              <form string="API">
+                <group string="Data">
+                    <field name = "user" />
+                    <field name = "password" />
+                    <field name = "url" />
+                    <field name = "token" />
+                    <field name = "access_token" />
+                    <field name = "token_type" />
+                    <field name = "expires_in" />
+                    <field name = "error_description" />
+                </group>
+              </form>
+            </field>
+        </record>
+
+        <!-- ACTION -->
+        <record model="ir.actions.act_window" id="action_api">
+            <field name="name">API</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">api.zeigen</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+        <menuitem id="api_zeigen_menu" name="API" parent="sale.sale_menu_root"/>
+        <menuitem id="api_zeigen_submenu" name="API" action="action_api" parent="api_zeigen_menu"/>
+
+      </data>
+
 </odoo>
