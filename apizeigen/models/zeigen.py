@@ -74,9 +74,9 @@ class ProductTemplate(models.Model):
         obj2 = {
           "product": {
             "name": str(datos['name']),
-            "full_description": "<strong>"+str(datos['name'])+"</strong>",
-            "short_description": str(datos['name']),
-            "sku": str(datos['name']),
+            "full_description": "<strong>"+str(datos['full_description'])+"</strong>",
+            "short_description": str(datos['short_description']),
+            "sku": str(datos['sku']),
             "price" : str(datos['list_price']),
             "stock_quantity": self.qty_available,
           }
