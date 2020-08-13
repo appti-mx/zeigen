@@ -75,7 +75,7 @@ class ProductTemplate(models.Model):
           "product": {
             "name": str(datos['name']),
             "full_description": "<strong>"+str(datos['full_description'])+"</strong>",
-            "short_description": str(datos['short_description']),
+            "short_description": str(datos['name']),
             "sku": str(datos['sku']),
             "price" : str(datos['list_price']),
             "stock_quantity": self.qty_available,
