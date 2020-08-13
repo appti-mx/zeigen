@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_apizeigen_apizeigen,apizeigen.apizeigen,model_apizeigen_apizeigen,,1,0,0,0
+access_api_zeigen,api.zeigen,model_api_zeigen,,1,1,1,1
