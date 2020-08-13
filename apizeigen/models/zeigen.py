@@ -5,12 +5,13 @@ import requests
 
 from odoo.addons import decimal_precision as dp
 
-from odoo import api, fields, models, tools, _
+from odoo import api, fields, models, tools, _, SUPERUSER_ID
 from odoo.exceptions import ValidationError, RedirectWarning, UserError
 from odoo.osv import expression
 from odoo.tools import pycompat
 from requests.auth import HTTPBasicAuth
 import json
+
 
 
 class Apizeigen(models.Model):
@@ -99,14 +100,13 @@ class Producttemplate(models.Model):
 
             raise UserError(rproduct.text)
 
-        for vals in vals_list:
-            tools.image_resize_images(vals)
-        templates = super(Producttemplate, self).create(vals_list)
+        ''' Store the initial standard price in order to be able to retrieve the cost of a product template for a given date'''
+        templates = super(ProductTemplate, self).create(vals_list)
         if "create_product_product" not in self._context:
-            templates.with_context(create_from_tmpl=True).create_variant_ids()
+            templates._create_variant_ids()
 
         # This is needed to set given values to first variant after creation
-        for template, vals in pycompat.izip(templates, vals_list):
+        for template, vals in zip(templates, vals_list):
             related_vals = {}
             if vals.get('barcode'):
                 related_vals['barcode'] = vals['barcode']
@@ -215,10 +215,23 @@ class Producttemplate(models.Model):
 
 
 
-        tools.image_resize_images(vals)
-        res = super(Producttemplate, self).write(vals)
+        uom = self.env['uom.uom'].browse(vals.get('uom_id')) or self.uom_id
+        uom_po = self.env['uom.uom'].browse(vals.get('uom_po_id')) or self.uom_po_id
+        if uom and uom_po and uom.category_id != uom_po.category_id:
+            vals['uom_po_id'] = uom.id
+
+        res = super(ProductTemplate, self).write(vals)
         if 'attribute_line_ids' in vals or vals.get('active'):
-            self.create_variant_ids()
+            self._create_variant_ids()
         if 'active' in vals and not vals.get('active'):
             self.with_context(active_test=False).mapped('product_variant_ids').write({'active': vals.get('active')})
+        if 'image_1920' in vals:
+            self.env['product.product'].invalidate_cache(fnames=[
+                'image_1920',
+                'image_1024',
+                'image_512',
+                'image_256',
+                'image_128',
+                'can_image_1024_be_zoomed',
+            ])
         return res
