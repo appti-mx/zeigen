@@ -55,50 +55,52 @@ class ProductTemplate(models.Model):
     def create(self, vals_list):
 
         datos = vals_list[0]
+        
+        if datos['sitio']:
 
-        general_data = self.env['api.zeigen'].search([('user', '!=', '')], order="id desc")
+            general_data = self.env['api.zeigen'].search([('user', '!=', '')], order="id desc")
 
-        url = str(general_data[0].url)+'/token'
-        myobj = {'username': str(general_data[0].user), 'password': str(general_data[0].password)}
+            url = str(general_data[0].url)+'/token'
+            myobj = {'username': str(general_data[0].user), 'password': str(general_data[0].password)}
 
-        r = requests.post(url, data=myobj)
+            r = requests.post(url, data=myobj)
 
-        rjson = r.json()
+            rjson = r.json()
 
-        access_token = rjson['access_token']
-        token_type = rjson['token_type']
-        expires_in = rjson['expires_in']
-        error_description = rjson['error_description']
-
-
-        obj2 = {
-          "product": {
-            "name": str(datos['name']),
-            "full_description": "<strong>"+str(datos['full_description'])+"</strong>",
-            "short_description": str(datos['name']),
-            "sku": str(datos['sku']),
-            "price" : str(datos['list_price']),
-            "stock_quantity": self.qty_available,
-          }
-        }
-
-        json_obj2 = json.dumps(obj2)
+            access_token = rjson['access_token']
+            token_type = rjson['token_type']
+            expires_in = rjson['expires_in']
+            error_description = rjson['error_description']
 
 
-        createproduct = str(general_data[0].url)+'/api/products/'
+            obj2 = {
+              "product": {
+                "name": str(datos['name']),
+                "full_description": "<strong>"+str(datos['full_description'])+"</strong>",
+                "short_description": str(datos['name']),
+                "sku": str(datos['sku']),
+                "price" : str(datos['list_price']),
+                "stock_quantity": self.qty_available,
+              }
+            }
 
-        headers = {
-            'Content-Type': "application/json",
-            'Authorization': "Bearer "+access_token
-        }
+            json_obj2 = json.dumps(obj2)
 
-        try:
 
-            rproduct = requests.post(createproduct, data=json_obj2, headers=headers)
+            createproduct = str(general_data[0].url)+'/api/products/'
 
-        except:
+            headers = {
+                'Content-Type': "application/json",
+                'Authorization': "Bearer "+access_token
+            }
 
-            raise UserError(rproduct.text)
+            try:
+
+                rproduct = requests.post(createproduct, data=json_obj2, headers=headers)
+
+            except:
+
+                raise UserError(rproduct.text)
 
         ''' Store the initial standard price in order to be able to retrieve the cost of a product template for a given date'''
         templates = super(ProductTemplate, self).create(vals_list)
