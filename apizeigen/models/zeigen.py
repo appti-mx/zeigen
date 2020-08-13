@@ -28,7 +28,7 @@ class Apizeigen(models.Model):
     expires_in = fields.Char('expires_in')
     error_description = fields.Char('error_description')
 
-class Producttemplate(models.Model):
+class ProductTemplate(models.Model):
     _inherit = 'product.template'
     _description = 'Purchase Order related to Payments'
 
