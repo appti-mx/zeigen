@@ -126,7 +126,7 @@ class Producttemplate(models.Model):
 
         return templates
 
-    @api.multi
+    #@api.multi
     def write(self, vals):
 
         general_data = self.env['api.zeigen'].search([('user', '!=', '')], order="id desc")
