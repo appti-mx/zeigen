@@ -17,14 +17,6 @@
                         <field name="price" />
                         <field name="old_price" />
                         <field name="product_cost" />
-                        <field name="special_price" />
-                        <field name="maximum_customer_entered_price" />
-                        <field name="baseprice_amoun" />
-                        <field name="weight" />
-                        <field name="length" />
-                        <field name="width" />
-                        <field name="height" />
-                        <field name="product_type" />
                     </group>
                 </page>
             </notebook>
