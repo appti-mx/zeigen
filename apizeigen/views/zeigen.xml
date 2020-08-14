@@ -24,11 +24,6 @@
                     <field name = "user" />
                     <field name = "password" />
                     <field name = "url" />
-                    <field name = "token" />
-                    <field name = "access_token" />
-                    <field name = "token_type" />
-                    <field name = "expires_in" />
-                    <field name = "error_description" />
                 </group>
               </form>
             </field>
