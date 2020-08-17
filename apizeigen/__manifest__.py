@@ -20,11 +20,12 @@
     'version': '0.2',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','contacts','stock','product'],
+    'depends': ['base','contacts','stock','product','purchase'],
 
     # always loaded
     'data': [
         'views/product_template.xml',
+        'views/purchase_order.xml',
         'views/zeigen.xml',
         'security/ir.model.access.csv',
     ],
