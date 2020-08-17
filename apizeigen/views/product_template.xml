@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <notebook position="inside">
                 <page string="Sitio WEB">
-                    <group string="Data">
+                    <group string="Información presente en sitio web">
                         <field name="sitio"/>
                         <field name="web_name"/>
                         <field name="short_description"/>
@@ -17,9 +17,13 @@
                         <field name="price" />
                         <field name="old_price" />
                         <field name="product_cost" />
+                        <field name="special_price" />
+                        <field name="display_stock_availability"/>
+                        <field name="published" />
                     </group>
                 </page>
             </notebook>
         </field>
     </record>
+
 </odoo>
