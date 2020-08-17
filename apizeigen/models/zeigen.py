@@ -13,7 +13,6 @@ from requests.auth import HTTPBasicAuth
 import json
 
 
-
 class Apizeigen(models.Model):
     _name = 'api.zeigen'
     _description = 'Api zeigen'
@@ -28,6 +27,7 @@ class Apizeigen(models.Model):
     expires_in = fields.Char('expires_in')
     error_description = fields.Char('error_description')
 
+
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
     _description = 'Purchase Order related to Payments'
@@ -35,8 +35,8 @@ class ProductTemplate(models.Model):
     web_name = fields.Char(string='Nombre del producto', related='name')
     short_description = fields.Char(string='Descripción corta del producto', related='name')
     full_description = fields.Char(string='Descripción larga del producto')
-    sku = fields.Char(string='sku')
-    stock_quantity = fields.Float(string='stock_quantity')
+    sku = fields.Char(string='SKU')
+    stock_quantity = fields.Float(string='Cantidad en Inventario', related='qty_available')
     price = fields.Float(string='Precio de Lista del producto', related='list_price')
     old_price = fields.Float(string='Precio anterior del producto')
     product_cost = fields.Float(string='Precio al costo del producto.', related='list_price')
@@ -50,17 +50,19 @@ class ProductTemplate(models.Model):
     product_type = fields.Char(string='product_type')
     sitio = fields.Boolean(string='Vincular a sitio')
 
+    display_stock_availability = fields.Boolean('Despliega si está en existencia')
+    published = fields.Boolean('Publicado')
 
     @api.model_create_multi
     def create(self, vals_list):
 
         datos = vals_list[0]
-        
+
         if datos['sitio']:
 
             general_data = self.env['api.zeigen'].search([('user', '!=', '')], order="id desc")
 
-            url = str(general_data[0].url)+'/token'
+            url = str(general_data[0].url) + '/token'
             myobj = {'username': str(general_data[0].user), 'password': str(general_data[0].password)}
 
             r = requests.post(url, data=myobj)
@@ -72,26 +74,24 @@ class ProductTemplate(models.Model):
             expires_in = rjson['expires_in']
             error_description = rjson['error_description']
 
-
             obj2 = {
-              "product": {
-                "name": str(datos['name']),
-                "full_description": "<strong>"+str(datos['full_description'])+"</strong>",
-                "short_description": str(datos['name']),
-                "sku": str(datos['sku']),
-                "price" : str(datos['list_price']),
-                "stock_quantity": self.qty_available,
-              }
+                "product": {
+                    "name": str(datos['name']),
+                    "full_description": "<strong>" + str(datos['full_description']) + "</strong>",
+                    "short_description": str(datos['name']),
+                    "sku": str(datos['sku']),
+                    "price": str(datos['list_price']),
+                    "stock_quantity": self.qty_available,
+                }
             }
 
             json_obj2 = json.dumps(obj2)
 
-
-            createproduct = str(general_data[0].url)+'/api/products/'
+            createproduct = str(general_data[0].url) + '/api/products/'
 
             headers = {
                 'Content-Type': "application/json",
-                'Authorization': "Bearer "+access_token
+                'Authorization': "Bearer " + access_token
             }
 
             try:
@@ -128,12 +128,12 @@ class ProductTemplate(models.Model):
 
         return templates
 
-    #@api.multi
+    # @api.multi
     def write(self, vals):
 
         general_data = self.env['api.zeigen'].search([('user', '!=', '')], order="id desc")
 
-        url = str(general_data[0].url)+'/token'
+        url = str(general_data[0].url) + '/token'
         myobj = {'username': str(general_data[0].user), 'password': str(general_data[0].password)}
 
         r = requests.post(url, data=myobj)
@@ -156,7 +156,7 @@ class ProductTemplate(models.Model):
             sku = str(self.sku)
 
             cantidad = 0
-            url = str(general_data[0].url)+'/api/productsbysku/'+sku
+            url = str(general_data[0].url) + '/api/productsbysku/' + sku
             rproduct = requests.get(url, headers=headers)
             rjson = rproduct.json()
 
@@ -174,7 +174,7 @@ class ProductTemplate(models.Model):
 
             try:
                 if rjson['products'][0]['name']:
-                    #Actualizar producto
+                    # Actualizar producto
                     obj3 = {
                         "product": {
                             "id": str(rjson['products'][0]['id']),
@@ -187,7 +187,7 @@ class ProductTemplate(models.Model):
                         }
                     }
 
-                    updateproduct = str(general_data[0].url)+'/api/products/'+str(rjson['products'][0]['id'])
+                    updateproduct = str(general_data[0].url) + '/api/products/' + str(rjson['products'][0]['id'])
 
                     json_obj3 = json.dumps(obj3)
 
@@ -208,14 +208,9 @@ class ProductTemplate(models.Model):
 
                 json_obj2 = json.dumps(obj2)
 
-                createproduct = str(general_data[0].url)+'/api/products/'
+                createproduct = str(general_data[0].url) + '/api/products/'
 
                 rproduct = requests.post(createproduct, data=json_obj2, headers=headers)
-
-
-
-
-
 
         uom = self.env['uom.uom'].browse(vals.get('uom_id')) or self.uom_id
         uom_po = self.env['uom.uom'].browse(vals.get('uom_po_id')) or self.uom_po_id
@@ -237,3 +232,40 @@ class ProductTemplate(models.Model):
                 'can_image_1024_be_zoomed',
             ])
         return res
+
+
+class PurchaseOrder(models.Model):
+    _inherit = 'purchase.order'
+
+    incrementables = fields.Float('% de Incrementables')
+
+
+class PurchaseOrderLine(models.Model):
+    _inherit = 'purchase.order.line'
+
+    porcentaje= fields.Float('Porcentaje')
+
+    @api.depends('product_qty', 'price_unit', 'taxes_id')
+    def _compute_amount(self):
+        for line in self:
+            vals = line._prepare_compute_all_values()
+            taxes = line.taxes_id.compute_all(
+                vals['price_unit'],
+                vals['currency_id'],
+                vals['product_qty'],
+                vals['product'],
+                vals['partner'])
+
+            incrementable = 0
+
+            if self.order_id.incrementables > 0:
+
+                incrementable =  vals['price_unit']*self.order_id.incrementables/100
+
+            line.update({
+                'porcentaje': incrementable,
+                'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
+                'price_total': taxes['total_included'],
+                'price_subtotal': taxes['total_excluded'] + incrementable,
+            })
+
