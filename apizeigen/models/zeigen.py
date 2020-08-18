@@ -238,6 +238,30 @@ class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
     incrementables = fields.Float('% de Incrementables')
+    
+    @api.onchange('incrementables')
+    def increment(self):
+        for line in self.order_line:
+            vals = line._prepare_compute_all_values()
+            taxes = line.taxes_id.compute_all(
+                vals['price_unit'],
+                vals['currency_id'],
+                vals['product_qty'],
+                vals['product'],
+                vals['partner'])
+
+            incrementable = 0
+
+            if self.incrementables > 0:
+
+                incrementable =  vals['price_unit']*self.incrementables/100
+
+            line.update({
+                'porcentaje': incrementable,
+                'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
+                'price_total': taxes['total_included'],
+                'price_subtotal': taxes['total_excluded'] + incrementable,
+            })
 
 
 class PurchaseOrderLine(models.Model):
