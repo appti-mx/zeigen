@@ -9,17 +9,23 @@
                 <page string="Sitio WEB">
                     <group string="Información presente en sitio web">
                         <field name="sitio"/>
+                        <field name="sku"/>
                         <field name="web_name"/>
+                        <field name="product_cost"  />
                         <field name="short_description"/>
-                        <field name="full_description" />
-                        <field name="sku" />
+                        <field name="full_description"/>
                         <field name="stock_quantity" />
+                        <field name="disable_buy_button" />
                         <field name="price" />
-                        <field name="old_price" />
-                        <field name="product_cost" />
-                        <field name="special_price" />
-                        <field name="display_stock_availability"/>
-                        <field name="published" />
+                        <field name="old_price"/>
+                        <field name="published"/>
+                        <field name="weight" />
+                        <field name="length"/>
+                        <field name="width" />
+                        <field name="height" />
+                        <field name="product_id"/>
+                        <field name="category_id"/>
+                        <field name="category_name"/>
                     </group>
                 </page>
             </notebook>
