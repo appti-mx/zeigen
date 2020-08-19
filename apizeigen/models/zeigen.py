@@ -32,26 +32,28 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
     _description = 'Purchase Order related to Payments'
 
-    web_name = fields.Char(string='Nombre del producto', related='name')
-    short_description = fields.Char(string='Descripción corta del producto', related='name')
-    full_description = fields.Char(string='Descripción larga del producto')
-    sku = fields.Char(string='SKU')
+    web_name = fields.Char(string='Nombre', related='name')
+    short_description = fields.Char(string='Descripción corta')
+    full_description = fields.Char(string='Descripción larga')
     stock_quantity = fields.Float(string='Cantidad en Inventario', related='qty_available')
-    price = fields.Float(string='Precio de Lista del producto', related='list_price')
+    disable_buy_button = fields.Boolean('Habilita botón de compra')
+    price = fields.Float(string='Precio de Venta', related='list_price')
     old_price = fields.Float(string='Precio anterior del producto')
-    product_cost = fields.Float(string='Precio al costo del producto.', related='list_price')
-    special_price = fields.Float(string='Precio especial')
-    maximum_customer_entered_price = fields.Float(string='maximum_customer_entered_price')
-    baseprice_amoun = fields.Float(string='baseprice_amoun')
-    weight = fields.Float(string='weight')
-    length = fields.Float(string='length')
-    width = fields.Float(string='width')
-    height = fields.Float(string='height')
-    product_type = fields.Char(string='product_type')
-    sitio = fields.Boolean(string='Vincular a sitio')
-
-    display_stock_availability = fields.Boolean('Despliega si está en existencia')
     published = fields.Boolean('Publicado')
+    weight = fields.Float(string='Peso')
+    length = fields.Float(string='Largo del equipo')
+    width = fields.Float(string='Ancho del equipo')
+    height = fields.Float(string='Alto del equipo ')
+    product_id = fields.Integer(related='id')
+    category_id = fields.Float('Familia')
+    category_name = fields.Char('Familia')
+    sitio = fields.Boolean(string='Publicado')
+    sku = fields.Char(string='SKU')
+
+    product_cost = fields.Float(string='Precio al costo del producto.', related='list_price')
+
+
+
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -77,11 +79,23 @@ class ProductTemplate(models.Model):
             obj2 = {
                 "product": {
                     "name": str(datos['name']),
-                    "full_description": "<strong>" + str(datos['full_description']) + "</strong>",
-                    "short_description": str(datos['name']),
-                    "sku": str(datos['sku']),
-                    "price": str(datos['list_price']),
+                    "short_description":str(datos['short_description']),
+                    "full_description":"<strong>" + str(datos['full_description']) + "</strong>",
                     "stock_quantity": self.qty_available,
+                    "disable_buy_button": self.disable_buy_button,
+                    "price":str(datos['list_price']),
+                    "old_price":self.old_price,
+                    "published":self.published,
+                    "weight":self.weight,
+                    "length":self.length,
+                    "width":self.width,
+                    "height":self.height,
+                    "product_id":self.product_id,
+                    "category_id":self.category_id,
+                    "category_name":self.category_name,
+                    "sitio":self.sitio,
+                    "sku":str(datos['sku']),
+                    "product_cost":str(datos['list_price'])
                 }
             }
 
@@ -164,13 +178,77 @@ class ProductTemplate(models.Model):
             if vals.get('name'):
                 name = vals['name']
 
-            list_price = str(self.list_price)
-            if vals.get('list_price'):
-                list_price = vals['list_price']
+            short_description = str(self.short_description)
+            if vals.get('short_description'):
+                short_description = vals['short_description']
 
-            qty_available = self.qty_available
+            full_description = str(self.full_description)
+            if vals.get('full_description'):
+                full_description = vals['full_description']
+
+            stock_quantity = self.stock_quantity
+            if vals.get('stock_quantity'):
+                stock_quantity = vals['stock_quantity']
+
+            disable_buy_button = str(self.disable_buy_button)
+            if vals.get('disable_buy_button'):
+                disable_buy_button = vals['disable_buy_button']
+
+            price = str(self.price)
+            if vals.get('price'):
+                price = vals['price']
+
+            qty_available = str(self.qty_available)
             if vals.get('qty_available'):
                 qty_available = vals['qty_available']
+
+            old_price = str(self.old_price)
+            if vals.get('old_price'):
+                old_price = vals['old_price']
+
+            published = str(self.published)
+            if vals.get('published'):
+                published = vals['published']
+
+            weight = str(self.weight)
+            if vals.get('weight'):
+                weight = vals['weight']
+
+            length = str(self.length)
+            if vals.get('length'):
+                length = vals['length']
+
+            width = str(self.width)
+            if vals.get('width'):
+                length = vals['width']
+
+            height = str(self.height)
+            if vals.get('height'):
+                height = vals['height']
+
+            product_id = str(self.product_id)
+            if vals.get('product_id'):
+                product_id = vals['product_id']
+
+            category_id = str(self.category_id)
+            if vals.get('category_id'):
+                category_id = vals['category_id']
+
+            category_name = str(self.category_name)
+            if vals.get('category_name'):
+                category_name = vals['category_name']
+
+            sitio = str(self.sitio)
+            if vals.get('sitio'):
+                sitio = vals['sitio']
+
+            sku = str(self.sku)
+            if vals.get('sku'):
+                sku = vals['sku']
+
+            product_cost = str(self.product_cost)
+            if vals.get('product_cost'):
+                product_cost = vals['product_cost']
 
             try:
                 if rjson['products'][0]['name']:
@@ -178,12 +256,24 @@ class ProductTemplate(models.Model):
                     obj3 = {
                         "product": {
                             "id": str(rjson['products'][0]['id']),
-                            "name": name,
-                            "full_description": "<strong>" + name + "</strong>",
-                            "short_description": name,
-                            "sku": sku,
-                            "price": list_price,
-                            "stock_quantity": qty_available,
+                            "name": str(name),
+                            "short_description": str(short_description),
+                            "full_description": "<strong>" + str(full_description) + "</strong>",
+                            "stock_quantity": stock_quantity,
+                            "disable_buy_button": str(disable_buy_button),
+                            "price": str(price),
+                            "old_price": str(old_price),
+                            "published": str(published),
+                            "weight": str(weight),
+                            "length": str(length),
+                            "width": str(width),
+                            "height": str(height),
+                            "product_id": str(product_id),
+                            "category_id": str(category_id),
+                            "category_name": str(category_name),
+                            "sitio": str(sitio),
+                            "sku": str(sku),
+                            "product_cost": str(product_cost)
                         }
                     }
 
@@ -198,11 +288,23 @@ class ProductTemplate(models.Model):
                 obj2 = {
                     "product": {
                         "name": str(self.name),
-                        "full_description": "<strong>" + str(self.name) + "</strong>",
-                        "short_description": str(self.name),
-                        "sku": str(self.sku),
+                        "short_description":str(self.short_description),
+                        "full_description":"<strong>" + str(self.full_description) + "</strong>",
+                        "stock_quantity": stock_quantity,
+                        "disable_buy_button": self.disable_buy_button,
                         "price": str(self.list_price),
-                        "stock_quantity": str(self.qty_available)
+                        "old_price":str(self.old_price),
+                        "published":str(self.published),
+                        "weight":str(self.weight),
+                        "length":str(self.length),
+                        "width":str(self.width),
+                        "height":str(self.height),
+                        "product_id":str(self.product_id),
+                        "category_id":str(self.category_id),
+                        "category_name":str(self.category_name),
+                        "sitio":str(self.sitio),
+                        "sku":str(self.sku),
+                        "product_cost":str(self.list_price)
                     }
                 }
 
