@@ -49,7 +49,7 @@ class ProductTemplate(models.Model):
     category_name = fields.Char('Familia')
     sitio = fields.Boolean(string='Publicado')
     sku = fields.Char(string='SKU')
-    special_price = fields.Float(string='Precio de Venta', related='list_price')
+    special_price = fields.Float(string='Precio especial', related='list_price')
 
     product_cost = fields.Float(string='Precio al costo del producto.', related='list_price')
 
