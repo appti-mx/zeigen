@@ -39,7 +39,7 @@ class ProductTemplate(models.Model):
     disable_buy_button = fields.Boolean('Habilita botón de compra')
     price = fields.Float(string='Precio de Venta', related='list_price')
     old_price = fields.Float(string='Precio anterior del producto')
-    published = fields.Boolean('Publicado')
+    published = fields.Boolean('Publicado en Tecnofin')
     weight = fields.Float(string='Peso')
     length = fields.Float(string='Largo del equipo')
     width = fields.Float(string='Ancho del equipo')
@@ -47,7 +47,7 @@ class ProductTemplate(models.Model):
     product_id = fields.Integer(related='id')
     category_id = fields.Float('Familia')
     category_name = fields.Char('Familia')
-    sitio = fields.Boolean(string='Publicado')
+    sitio = fields.Boolean(string='Integración en Tecnofin')
     sku = fields.Char(string='SKU')
     special_price = fields.Float(string='Precio especial', related='list_price')
 
@@ -189,7 +189,7 @@ class ProductTemplate(models.Model):
 
             stock_quantity = self.stock_quantity
             if vals.get('stock_quantity'):
-                stock_quantity = vals['stock_quantity']
+                stock_quantity = self.stock_quantity
 
             disable_buy_button = str(self.disable_buy_button)
             if vals.get('disable_buy_button'):
