@@ -8,8 +8,8 @@
             <notebook position="inside">
                 <page string="Sitio WEB">
                     <group string="Información presente en sitio web">
-                        <field name="sitio"/>
                         <field name="sku"/>
+                        <field name="sitio"/>
                         <field name="web_name"/>
                         <field name="product_cost"  />
                         <field name="short_description"/>
@@ -26,6 +26,7 @@
                         <field name="product_id"/>
                         <field name="category_id"/>
                         <field name="category_name"/>
+                        <field name="special_price"/>
                     </group>
                 </page>
             </notebook>
