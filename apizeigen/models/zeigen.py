@@ -53,6 +53,10 @@ class ProductTemplate(models.Model):
 
     product_cost = fields.Float(string='Precio al costo del producto.', related='list_price')
 
+    @api.onchange('qty_available')
+    def action_afaire(self):
+        gola = 1
+
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -144,195 +148,206 @@ class ProductTemplate(models.Model):
     # @api.multi
     def write(self, vals):
 
-        general_data = self.env['api.zeigen'].search([('user', '!=', '')], order="id desc")
+        sitio = self.sitio
+        if vals.get('sitio'):
+            sitio = vals['sitio']
 
-        url = str(general_data[0].url) + '/token'
-        myobj = {'username': str(general_data[0].user), 'password': str(general_data[0].password)}
 
-        r = requests.post(url, data=myobj)
+        if sitio:
 
-        rjson = r.json()
+            general_data = self.env['api.zeigen'].search([('user', '!=', '')], order="id desc")
 
-        access_token = rjson['access_token']
-        token_type = rjson['token_type']
-        expires_in = rjson['expires_in']
-        error_description = rjson['error_description']
+            url = str(general_data[0].url) + '/token'
+            myobj = {'username': str(general_data[0].user), 'password': str(general_data[0].password)}
 
-        headers = {
-            'Content-Type': "application/json",
-            'Authorization': "Bearer " + access_token
-        }
+            r = requests.post(url, data=myobj)
 
-        name_product = ''
+            rjson = r.json()
 
-        if vals:
-            sku = str(self.sku)
+            access_token = rjson['access_token']
+            token_type = rjson['token_type']
+            expires_in = rjson['expires_in']
+            error_description = rjson['error_description']
 
-            cantidad = 0
-            url = str(general_data[0].url) + '/api/productsbysku/' + sku
-            rproduct = requests.get(url, headers=headers)
-            rjson = rproduct.json()
+            headers = {
+                'Content-Type': "application/json",
+                'Authorization': "Bearer " + access_token
+            }
 
-            name = str(self.name)
-            if vals.get('name'):
-                name = vals['name']
+            name_product = ''
 
-            short_description = str(self.short_description)
-            if vals.get('short_description'):
-                short_description = vals['short_description']
+            if vals:
+                sku = str(self.sku)
 
-            full_description = str(self.full_description)
-            if vals.get('full_description'):
-                full_description = vals['full_description']
+                cantidad = 0
+                url = str(general_data[0].url) + '/api/productsbysku/' + sku
+                rproduct = requests.get(url, headers=headers)
+                rjson = rproduct.json()
 
-            stock_quantity = self.stock_quantity
-            if vals.get('stock_quantity'):
-                stock_quantity = self.stock_quantity
+                name = str(self.name)
+                if vals.get('name'):
+                    name = vals['name']
 
-            disable_buy_button = str(self.disable_buy_button)
-            if vals.get('disable_buy_button'):
-                disable_buy_button = vals['disable_buy_button']
+                short_description = str(self.short_description)
+                if vals.get('short_description'):
+                    short_description = vals['short_description']
 
-            price = str(self.price)
-            if vals.get('price'):
-                price = vals['price']
+                full_description = str(self.full_description)
+                if vals.get('full_description'):
+                    full_description = vals['full_description']
 
-            qty_available = str(self.qty_available)
-            if vals.get('qty_available'):
-                qty_available = vals['qty_available']
+                stock_quantity = self.qty_available
+                if vals.get('stock_quantity'):
+                    stock_quantity = vals['stock_quantity']
+                if vals.get('qty_available'):
+                    stock_quantity = vals['qty_available']
 
-            old_price = str(self.old_price)
-            if vals.get('old_price'):
-                old_price = vals['old_price']
+                disable_buy_button = str(self.disable_buy_button)
+                if vals.get('disable_buy_button'):
+                    disable_buy_button = vals['disable_buy_button']
 
-            published = str(self.published)
-            if vals.get('published'):
-                published = vals['published']
+                price = str(self.price)
+                if vals.get('price'):
+                    price = vals['price']
 
-            weight = str(self.weight)
-            if vals.get('weight'):
-                weight = vals['weight']
+                qty_available = str(self.qty_available)
+                if vals.get('qty_available'):
+                    qty_available = vals['qty_available']
 
-            length = str(self.length)
-            if vals.get('length'):
-                length = vals['length']
+                old_price = str(self.old_price)
+                if vals.get('old_price'):
+                    old_price = vals['old_price']
 
-            width = str(self.width)
-            if vals.get('width'):
-                length = vals['width']
+                published = str(self.published)
+                if vals.get('published'):
+                    published = vals['published']
 
-            height = str(self.height)
-            if vals.get('height'):
-                height = vals['height']
+                weight = str(self.weight)
+                if vals.get('weight'):
+                    weight = vals['weight']
 
-            product_id = str(self.product_id)
-            if vals.get('product_id'):
-                product_id = vals['product_id']
+                length = str(self.length)
+                if vals.get('length'):
+                    length = vals['length']
 
-            category_id = str(self.category_id)
-            if vals.get('category_id'):
-                category_id = vals['category_id']
+                width = str(self.width)
+                if vals.get('width'):
+                    length = vals['width']
 
-            category_name = str(self.category_name)
-            if vals.get('category_name'):
-                category_name = vals['category_name']
+                height = str(self.height)
+                if vals.get('height'):
+                    height = vals['height']
 
-            sitio = str(self.sitio)
-            if vals.get('sitio'):
-                sitio = vals['sitio']
+                product_id = str(self.product_id)
+                if vals.get('product_id'):
+                    product_id = vals['product_id']
 
-            sku = str(self.sku)
-            if vals.get('sku'):
-                sku = vals['sku']
+                category_id = str(self.category_id)
+                if vals.get('category_id'):
+                    category_id = vals['category_id']
 
-            product_cost = str(self.product_cost)
-            if vals.get('product_cost'):
-                product_cost = vals['product_cost']
+                category_name = str(self.category_name)
+                if vals.get('category_name'):
+                    category_name = vals['category_name']
 
-            try:
-                if rjson['products'][0]['name']:
-                    # Actualizar producto
-                    obj3 = {
+                sitio = str(self.sitio)
+                if vals.get('sitio'):
+                    sitio = vals['sitio']
+
+                sku = str(self.sku)
+                if vals.get('sku'):
+                    sku = vals['sku']
+
+                product_cost = str(self.product_cost)
+                if vals.get('product_cost'):
+                    product_cost = vals['product_cost']
+
+                try:
+                    if rjson['products'][0]['name']:
+                        # Actualizar producto
+                        obj3 = {
+                            "product": {
+                                "id": str(rjson['products'][0]['id']),
+                                "name": str(name),
+                                "short_description": str(short_description),
+                                "full_description": "<strong>" + str(full_description) + "</strong>",
+                                "stock_quantity": stock_quantity,
+                                "disable_buy_button": str(disable_buy_button),
+                                "price": str(price),
+                                "old_price": str(old_price),
+                                "published": str(published),
+                                "weight": str(weight),
+                                "length": str(length),
+                                "width": str(width),
+                                "height": str(height),
+                                "product_id": str(product_id),
+                                "category_id": str(category_id),
+                                "category_name": str(category_name),
+                                "sitio": str(sitio),
+                                "sku": str(sku),
+                                "product_cost": str(product_cost)
+                            }
+                        }
+
+                        updateproduct = str(general_data[0].url) + '/api/products/' + str(rjson['products'][0]['id'])
+
+                        json_obj3 = json.dumps(obj3)
+
+                        rproduct = requests.put(updateproduct, data=json_obj3, headers=headers)
+
+                except:
+                    cantidad = 0
+                    obj2 = {
                         "product": {
-                            "id": str(rjson['products'][0]['id']),
-                            "name": str(name),
-                            "short_description": str(short_description),
-                            "full_description": "<strong>" + str(full_description) + "</strong>",
+                            "name": str(self.name),
+                            "short_description":str(self.short_description),
+                            "full_description":"<strong>" + str(self.full_description) + "</strong>",
                             "stock_quantity": stock_quantity,
-                            "disable_buy_button": str(disable_buy_button),
-                            "price": str(price),
-                            "old_price": str(old_price),
-                            "published": str(published),
-                            "weight": str(weight),
-                            "length": str(length),
-                            "width": str(width),
-                            "height": str(height),
-                            "product_id": str(product_id),
-                            "category_id": str(category_id),
-                            "category_name": str(category_name),
-                            "sitio": str(sitio),
-                            "sku": str(sku),
-                            "product_cost": str(product_cost)
+                            "disable_buy_button": self.disable_buy_button,
+                            "price": str(self.list_price),
+                            "old_price":str(self.old_price),
+                            "published":str(self.published),
+                            "weight":str(self.weight),
+                            "length":str(self.length),
+                            "width":str(self.width),
+                            "height":str(self.height),
+                            "product_id":str(self.product_id),
+                            "category_id":str(self.category_id),
+                            "category_name":str(self.category_name),
+                            "sitio":str(self.sitio),
+                            "sku":str(self.sku),
+                            "product_cost":str(self.list_price)
                         }
                     }
 
-                    updateproduct = str(general_data[0].url) + '/api/products/' + str(rjson['products'][0]['id'])
+                    json_obj2 = json.dumps(obj2)
 
-                    json_obj3 = json.dumps(obj3)
+                    createproduct = str(general_data[0].url) + '/api/products/'
 
-                    rproduct = requests.put(updateproduct, data=json_obj3, headers=headers)
+                    rproduct = requests.post(createproduct, data=json_obj2, headers=headers)
 
-            except:
-                cantidad = 0
-                obj2 = {
-                    "product": {
-                        "name": str(self.name),
-                        "short_description":str(self.short_description),
-                        "full_description":"<strong>" + str(self.full_description) + "</strong>",
-                        "stock_quantity": stock_quantity,
-                        "disable_buy_button": self.disable_buy_button,
-                        "price": str(self.list_price),
-                        "old_price":str(self.old_price),
-                        "published":str(self.published),
-                        "weight":str(self.weight),
-                        "length":str(self.length),
-                        "width":str(self.width),
-                        "height":str(self.height),
-                        "product_id":str(self.product_id),
-                        "category_id":str(self.category_id),
-                        "category_name":str(self.category_name),
-                        "sitio":str(self.sitio),
-                        "sku":str(self.sku),
-                        "product_cost":str(self.list_price)
-                    }
-                }
+            uom = self.env['uom.uom'].browse(vals.get('uom_id')) or self.uom_id
+            uom_po = self.env['uom.uom'].browse(vals.get('uom_po_id')) or self.uom_po_id
+            if uom and uom_po and uom.category_id != uom_po.category_id:
+                vals['uom_po_id'] = uom.id
 
-                json_obj2 = json.dumps(obj2)
+            res = super(ProductTemplate, self).write(vals)
+            if 'attribute_line_ids' in vals or vals.get('active'):
+                self._create_variant_ids()
+            if 'active' in vals and not vals.get('active'):
+                self.with_context(active_test=False).mapped('product_variant_ids').write({'active': vals.get('active')})
+            if 'image_1920' in vals:
+                self.env['product.product'].invalidate_cache(fnames=[
+                    'image_1920',
+                    'image_1024',
+                    'image_512',
+                    'image_256',
+                    'image_128',
+                    'can_image_1024_be_zoomed',
+                ])
+            return res
 
-                createproduct = str(general_data[0].url) + '/api/products/'
 
-                rproduct = requests.post(createproduct, data=json_obj2, headers=headers)
-
-        uom = self.env['uom.uom'].browse(vals.get('uom_id')) or self.uom_id
-        uom_po = self.env['uom.uom'].browse(vals.get('uom_po_id')) or self.uom_po_id
-        if uom and uom_po and uom.category_id != uom_po.category_id:
-            vals['uom_po_id'] = uom.id
-
-        res = super(ProductTemplate, self).write(vals)
-        if 'attribute_line_ids' in vals or vals.get('active'):
-            self._create_variant_ids()
-        if 'active' in vals and not vals.get('active'):
-            self.with_context(active_test=False).mapped('product_variant_ids').write({'active': vals.get('active')})
-        if 'image_1920' in vals:
-            self.env['product.product'].invalidate_cache(fnames=[
-                'image_1920',
-                'image_1024',
-                'image_512',
-                'image_256',
-                'image_128',
-                'can_image_1024_be_zoomed',
-            ])
-        return res
 
 
 class PurchaseOrder(models.Model):
@@ -432,3 +447,25 @@ class PurchaseOrderLine(models.Model):
             'partner': self.order_id.partner_id,
             'porcentaje': self.porcentaje,
         }
+
+class StockQuant(models.Model):
+    _inherit = 'stock.quant'
+    _description = 'Quants'
+    _rec_name = 'product_id'
+
+    def write(self, vals):
+        """ Override to handle the "inventory mode" and create the inventory move. """
+        if self._is_inventory_mode() and 'inventory_quantity' in vals:
+            if any(quant.location_id.usage == 'inventory' for quant in self):
+                # Do nothing when user tries to modify manually a inventory loss
+                return
+            allowed_fields = self._get_inventory_fields_write()
+            if any([field for field in vals.keys() if field not in allowed_fields]):
+                raise UserError(_("Quant's edition is restricted, you can't do this operation."))
+            self = self.sudo()
+
+            self.product_tmpl_id.qty_available = vals['inventory_quantity']
+            self.product_tmpl_id.inventory_quantity = vals['inventory_quantity']
+
+            return super(StockQuant, self).write(vals)
+        return super(StockQuant, self).write(vals)
