@@ -386,8 +386,7 @@ class PurchaseOrder(models.Model):
                 'price_subtotal': taxes['total_excluded'],
             })
 
-            all_records = self.env['stock.valuation.layer'].search(
-                [('product_id', '=', line.product_id.id), ('stock_move_id', '=', self.move_ids.ids[0])])
+            all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
 
             all_records.value = taxes['total_excluded'] + incrementable
 
@@ -426,7 +425,7 @@ class PurchaseOrderLine(models.Model):
                 'price_subtotal': taxes['total_excluded'] + incrementable,
             })
 
-            all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id ),('stock_move_id', '=', self.move_ids.ids[0])])
+            all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
 
             all_records.value = taxes['total_excluded'] + incrementable
 
@@ -469,3 +468,5 @@ class StockQuant(models.Model):
 
             return super(StockQuant, self).write(vals)
         return super(StockQuant, self).write(vals)
+
+
