@@ -54,8 +54,6 @@ class ProductTemplate(models.Model):
     product_cost = fields.Float(string='Precio al costo del producto.', related='list_price')
 
 
-
-
     @api.model_create_multi
     def create(self, vals_list):
 
@@ -373,6 +371,10 @@ class PurchaseOrder(models.Model):
                 'price_subtotal': taxes['total_excluded'],
             })
 
+            all_records = self.env['stock.valuation.layer'].search(
+                [('product_id', '=', line.product_id.id), ('stock_move_id', '=', self.move_ids.ids[0])])
+
+            all_records.value = taxes['total_excluded'] + incrementable
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
@@ -391,16 +393,15 @@ class PurchaseOrderLine(models.Model):
 
                 unitario = vals['price_unit'] + incrementable
 
-                vals.update({'price_unit': unitario})
+                vals.update({'price_unit': unitario, 'porcentaje':incrementable})
 
             taxes = line.taxes_id.compute_all(
                 vals['price_unit'],
                 vals['currency_id'],
                 vals['product_qty'],
                 vals['product'],
-                vals['partner'])
-
-            incrementable = 0
+                vals['partner'],
+                vals['porcentaje'])
 
 
             line.update({
@@ -410,5 +411,24 @@ class PurchaseOrderLine(models.Model):
                 'price_subtotal': taxes['total_excluded'] + incrementable,
             })
 
+            all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id ),('stock_move_id', '=', self.move_ids.ids[0])])
 
+            all_records.value = taxes['total_excluded'] + incrementable
 
+        return line
+
+    def _prepare_compute_all_values(self):
+        # Hook method to returns the different argument values for the
+        # compute_all method, due to the fact that discounts mechanism
+        # is not implemented yet on the purchase orders.
+        # This method should disappear as soon as this feature is
+        # also introduced like in the sales module.
+        self.ensure_one()
+        return {
+            'price_unit': self.price_unit,
+            'currency_id': self.order_id.currency_id,
+            'product_qty': self.product_qty,
+            'product': self.product_id,
+            'partner': self.order_id.partner_id,
+            'porcentaje': self.porcentaje,
+        }
