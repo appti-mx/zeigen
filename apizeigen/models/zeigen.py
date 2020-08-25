@@ -390,7 +390,7 @@ class PurchaseOrder(models.Model):
 
                 all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
 
-                all_records.value = taxes['total_excluded'] + incrementable
+                all_records.value = taxes['total_excluded'] + incrementable + sum(t.get('amount', 0.0) for t in taxes.get('taxes', []))
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
@@ -431,7 +431,7 @@ class PurchaseOrderLine(models.Model):
 
                 all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
 
-                all_records.value = taxes['total_excluded'] + incrementable
+                all_records.value = taxes['total_excluded'] + incrementable + sum(t.get('amount', 0.0) for t in taxes.get('taxes', []))
 
         return line
 
@@ -472,5 +472,3 @@ class StockQuant(models.Model):
 
             return super(StockQuant, self).write(vals)
         return super(StockQuant, self).write(vals)
-
-
