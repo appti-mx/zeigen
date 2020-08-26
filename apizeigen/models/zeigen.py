@@ -410,7 +410,7 @@ class PurchaseOrder(models.Model):
                     subtotal_proveedor = order.currency_id._convert(subtotal_proveedor, self.user_id.currency_id, self.user_id.company_id, self.date_order)
 
 
-                    #line.price_subtotal =  amount_untaxed
+                    line.price_subtotal =  amount_untaxed
 
                 if line.move_ids.ids != []:
                     all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
