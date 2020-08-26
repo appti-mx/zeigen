@@ -16,6 +16,7 @@
                     expr="//field[@name='price_unit']"
                     position="after">
                     <field name="porcentaje"/>
+                    <field name="subtotal_proveedor"/>
                 </xpath>
             </data>
         </field>
