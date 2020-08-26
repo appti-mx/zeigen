@@ -3,7 +3,6 @@ import itertools
 
 import requests
 
-from odoo.addons import decimal_precision as dp
 
 from odoo import api, fields, models, tools, _, SUPERUSER_ID
 from odoo.exceptions import ValidationError, RedirectWarning, UserError
@@ -383,7 +382,7 @@ class PurchaseOrder(models.Model):
                 'porcentaje': incrementable,
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
-                'price_subtotal': taxes['total_excluded'],
+                'price_subtotal': taxes['total_included'],
             })
 
             if line.move_ids.ids != []:
@@ -391,6 +390,38 @@ class PurchaseOrder(models.Model):
                 all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
 
                 all_records.value = taxes['total_excluded'] + incrementable + sum(t.get('amount', 0.0) for t in taxes.get('taxes', []))
+
+    @api.depends('order_line.price_total')
+    def _amount_all(self):
+        for order in self:
+            amount_untaxed = amount_tax = porcentaje = 0.0
+            for line in order.order_line:
+                amount_untaxed += line.price_subtotal
+                amount_tax += line.price_tax
+                porcentaje += line.porcentaje
+
+                if order.currency_id.id != self.user_id.currency_id:
+
+                    amount_untaxed = order.currency_id._convert(amount_untaxed, self.user_id.currency_id, self.user_id.company_id, self.date_order)
+                    amount_tax = order.currency_id._convert(amount_tax, self.user_id.currency_id, self.user_id.company_id, self.date_order)
+                    porcentaje = order.currency_id._convert(porcentaje, self.user_id.currency_id, self.user_id.company_id, self.date_order)
+
+
+                    line.price_subtotal = amount_untaxed 
+
+                if line.move_ids.ids != []:
+                    all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
+
+                    all_records.value = amount_untaxed + amount_tax
+
+
+            order.update({
+                'amount_untaxed': order.currency_id.round(amount_untaxed),
+                'amount_tax': order.currency_id.round(amount_tax),
+                'amount_total': amount_untaxed + amount_tax,
+            })
+
+
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
@@ -424,7 +455,7 @@ class PurchaseOrderLine(models.Model):
                 'porcentaje': incrementable,
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
-                'price_subtotal': taxes['total_excluded'] + incrementable,
+                'price_subtotal': taxes['total_excluded'],
             })
 
             if line.move_ids.ids != []:
@@ -472,3 +503,5 @@ class StockQuant(models.Model):
 
             return super(StockQuant, self).write(vals)
         return super(StockQuant, self).write(vals)
+
+
