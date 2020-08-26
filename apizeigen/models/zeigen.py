@@ -52,10 +52,6 @@ class ProductTemplate(models.Model):
 
     product_cost = fields.Float(string='Precio al costo del producto.', related='list_price')
 
-    @api.onchange('qty_available')
-    def action_afaire(self):
-        gola = 1
-
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -357,18 +353,22 @@ class PurchaseOrder(models.Model):
     @api.onchange('incrementables')
     def increment(self):
 
+        incrementable = 0
+        subtotal_proveedor = 0
+
         for line in self.order_line:
             vals = line._prepare_compute_all_values()
 
-            incrementable = 0
-
             if self.incrementables > 0:
 
-                incrementable =  vals['price_unit']*self.incrementables/100
+                incrementable =  (vals['price_unit']*self.incrementables/100)
 
                 unitario = vals['price_unit'] + incrementable
 
-                vals.update({'price_unit': unitario})
+                subtotal_proveedor = vals['price_unit'] + incrementable
+
+                vals.update({'price_unit': unitario, 'porcentaje':incrementable, 'subtotal_proveedor':subtotal_proveedor})
+
 
             taxes = line.taxes_id.compute_all(
             vals['price_unit'],
@@ -379,10 +379,11 @@ class PurchaseOrder(models.Model):
 
 
             line.update({
-                'porcentaje': incrementable,
+                'porcentaje': incrementable * vals['product_qty'],
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
-                'price_subtotal': taxes['total_included'],
+                'price_subtotal': (vals['price_unit'] * vals['product_qty']),
+                'subtotal_proveedor':subtotal_proveedor *vals['product_qty'],
             })
 
             if line.move_ids.ids != []:
@@ -394,20 +395,22 @@ class PurchaseOrder(models.Model):
     @api.depends('order_line.price_total')
     def _amount_all(self):
         for order in self:
-            amount_untaxed = amount_tax = porcentaje = 0.0
+            amount_untaxed = amount_tax = porcentaje = subtotal_proveedor = 0.0
             for line in order.order_line:
                 amount_untaxed += line.price_subtotal
                 amount_tax += line.price_tax
                 porcentaje += line.porcentaje
+                subtotal_proveedor += line.subtotal_proveedor
 
                 if order.currency_id.id != self.user_id.currency_id:
 
                     amount_untaxed = order.currency_id._convert(amount_untaxed, self.user_id.currency_id, self.user_id.company_id, self.date_order)
                     amount_tax = order.currency_id._convert(amount_tax, self.user_id.currency_id, self.user_id.company_id, self.date_order)
                     porcentaje = order.currency_id._convert(porcentaje, self.user_id.currency_id, self.user_id.company_id, self.date_order)
+                    subtotal_proveedor = order.currency_id._convert(subtotal_proveedor, self.user_id.currency_id, self.user_id.company_id, self.date_order)
 
 
-                    line.price_subtotal = amount_untaxed 
+                    #line.price_subtotal =  amount_untaxed
 
                 if line.move_ids.ids != []:
                     all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
@@ -427,20 +430,25 @@ class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
     porcentaje= fields.Float('Porcentaje')
+    subtotal_proveedor = fields.Float('Sub Proveedor')
 
     @api.depends('product_qty', 'price_unit', 'taxes_id')
     def _compute_amount(self):
+        incrementable = 0
+        subtotal_proveedor = 0
         for line in self:
+
+
             vals = line._prepare_compute_all_values()
 
-            incrementable = 0
-
             if self.order_id.incrementables > 0:
-                incrementable = vals['price_unit'] * self.order_id.incrementables / 100
+                incrementable = (vals['price_unit'] * self.order_id.incrementables / 100 )
 
                 unitario = vals['price_unit'] + incrementable
 
-                vals.update({'price_unit': unitario, 'porcentaje':incrementable})
+                subtotal_proveedor = vals['price_unit'] + incrementable
+
+                vals.update({'price_unit': unitario, 'porcentaje':incrementable, 'subtotal_proveedor':subtotal_proveedor})
 
             taxes = line.taxes_id.compute_all(
                 vals['price_unit'],
@@ -452,10 +460,11 @@ class PurchaseOrderLine(models.Model):
 
 
             line.update({
-                'porcentaje': incrementable,
+                'porcentaje': incrementable * vals['product_qty'],
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
-                'price_subtotal': taxes['total_excluded'],
+                'price_subtotal':(vals['price_unit'] * vals['product_qty']),
+                'subtotal_proveedor':subtotal_proveedor *vals['product_qty'],
             })
 
             if line.move_ids.ids != []:
