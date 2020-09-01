@@ -53,6 +53,7 @@ class ProductTemplate(models.Model):
     product_cost = fields.Float(string='Precio al costo del producto.', related='list_price')
 
 
+
     @api.model_create_multi
     def create(self, vals_list):
 
@@ -437,7 +438,6 @@ class PurchaseOrderLine(models.Model):
         incrementable = 0
         subtotal_proveedor = 0
         for line in self:
-
 
             vals = line._prepare_compute_all_values()
 
