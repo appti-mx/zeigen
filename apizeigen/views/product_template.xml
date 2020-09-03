@@ -29,6 +29,13 @@
                         <field name="special_price"/>
                     </group>
                 </page>
+
+                <page string="Atributos sitio WEP">
+                    <group string="Atributos en sitio web">
+                        <field name="marca"/>
+                        <field name="subcategoria"/>
+                    </group>
+                </page>
             </notebook>
         </field>
     </record>
