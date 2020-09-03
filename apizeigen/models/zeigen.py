@@ -52,6 +52,9 @@ class ProductTemplate(models.Model):
 
     product_cost = fields.Float(string='Precio al costo del producto.', related='list_price')
 
+    marca = fields.Many2one('marca.zeigen', 'Marca')
+    subcategoria = fields.Many2one('subcategoria.zeigen','Subcategoría')
+
 
 
     @api.model_create_multi
@@ -258,6 +261,28 @@ class ProductTemplate(models.Model):
                 if vals.get('product_cost'):
                     product_cost = vals['product_cost']
 
+
+
+
+
+                marca = self.marca
+                if vals.get('marca'):
+                    id_marca = self.env['marca.zeigen'].search([('id', '=',vals['marca'])])
+
+                    marca = id_marca[0]
+
+                subcategoria = self.subcategoria
+                if vals.get('subcategoria'):
+                    id_subcategoria = self.env['subcategoria.zeigen'].search([('id', '=', vals['subcategoria'])])
+
+                    subcategoria = id_subcategoria[0]
+
+
+
+
+
+
+
                 try:
                     if rjson['products'][0]['name']:
                         # Actualizar producto
@@ -281,7 +306,11 @@ class ProductTemplate(models.Model):
                                 "category_name": str(category_name),
                                 "sitio": str(sitio),
                                 "sku": str(sku),
-                                "product_cost": str(product_cost)
+                                "product_cost": str(product_cost),
+                                "specification_attributes": "[{ \"attribute_type_id\": 0, \"custom_value\": null, \"allow_filtering\": false, \"show_on_product_page\": true, \"display_order\": 1, \"attribute_type\": \"Option\", \"specification_attribute_option\": { \"specification_attribute_id\": 1, \"name\": \"" + str(
+                                    sku) + "\", \"color_squares_rgb\": null, \"display_order\": 0 } },{ \"attribute_type_id\": 0, \"custom_value\": null, \"allow_filtering\": false, \"show_on_product_page\": true, \"display_order\": 1, \"attribute_type\": \"Option\", \"specification_attribute_option\": { \"specification_attribute_id\": 2, \"name\": \"" + str(
+                                    marca.display_name) + "\", \"color_squares_rgb\": null, \"display_order\": 0 } },{ \"attribute_type_id\": 0, \"custom_value\": null, \"allow_filtering\": false, \"show_on_product_page\": true, \"display_order\": 1, \"attribute_type\": \"Option\",\"specification_attribute_option\": { \"specification_attribute_id\": 3, \"name\": \"" + str(
+                                    subcategoria.display_name) + "\", \"color_squares_rgb\": null, \"display_order\": 0 } }]"
                             }
                         }
 
