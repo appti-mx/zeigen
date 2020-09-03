@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_api_zeigen,api.zeigen,model_api_zeigen,,1,1,1,1
+access_marca_zeigen,marca.zeigen,model_marca_zeigen,, 1, 1, 1, 1
+access_subcategoria_zeigen,subcategoria.zeigen,model_subcategoria_zeigen,, 1, 1, 1, 1
