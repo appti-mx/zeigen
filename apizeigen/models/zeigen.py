@@ -274,14 +274,7 @@ class ProductTemplate(models.Model):
                 subcategoria = self.subcategoria
                 if vals.get('subcategoria'):
                     id_subcategoria = self.env['subcategoria.zeigen'].search([('id', '=', vals['subcategoria'])])
-
                     subcategoria = id_subcategoria[0]
-
-
-
-
-
-
 
                 try:
                     if rjson['products'][0]['name']:
@@ -541,5 +534,4 @@ class StockQuant(models.Model):
 
             return super(StockQuant, self).write(vals)
         return super(StockQuant, self).write(vals)
-
 
