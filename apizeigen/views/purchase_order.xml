@@ -13,6 +13,12 @@
                 </xpath>
 
                 <xpath
+                    expr="//field[@name='amount_tax']"
+                    position="after">
+                    <field name="iva"/>
+                </xpath>
+
+                <xpath
                     expr="//field[@name='price_unit']"
                     position="after">
                     <field name="porcentaje"/>
