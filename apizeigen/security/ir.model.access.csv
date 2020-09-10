@@ -1,4 +1,109 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_api_zeigen,api.zeigen,model_api_zeigen,,1,1,1,1
+access_tags_zeigen,tags.zeigen,model_tags_zeigen,, 1, 1, 1, 1
 access_marca_zeigen,marca.zeigen,model_marca_zeigen,, 1, 1, 1, 1
 access_subcategoria_zeigen,subcategoria.zeigen,model_subcategoria_zeigen,, 1, 1, 1, 1
+access_marca_zeigen,marca.zeigen,model_marca_zeigen,, 1, 1, 1, 1
+access_subcategoria_zeigen,subcategoria.zeigen,model_subcategoria_zeigen,, 1, 1, 1, 1
+access_marcasanatom_zeigen,marcasanatom.zeigen,model_marcasanatom_zeigen,, 1, 1, 1, 1
+access_materiales_zeigen,materiales.zeigen,model_materiales_zeigen,, 1, 1, 1, 1
+access_ojos_zeigen,ojos.zeigen,model_ojos_zeigen,, 1, 1, 1, 1
+access_tipo_zeigen,tipo.zeigen,model_tipo_zeigen,, 1, 1, 1, 1
+access_nivel_zeigen,nivel.zeigen,model_nivel_zeigen,, 1, 1, 1, 1
+access_pulso_zeigen,pulso.zeigen,model_pulso_zeigen,, 1, 1, 1, 1
+access_respiracion_zeigen,respiracion.zeigen,model_respiracion_zeigen,, 1, 1, 1, 1
+access_incluye_zeigen,incluye.zeigen,model_incluye_zeigen,, 1, 1, 1, 1
+access_cuerpo_zeigen,cuerpo.zeigen,model_cuerpo_zeigen,, 1, 1, 1, 1
+access_cabezal_zeigen,cabezal.zeigen,model_cabezal_zeigen,, 1, 1, 1, 1
+access_velocidad_zeigen,velocidad.zeigen,model_velocidad_zeigen,, 1, 1, 1, 1
+access_desfibrilacio_zeigen,desfibrilacio.zeigen,model_desfibrilacio_zeigen,, 1, 1, 1, 1
+access_pecho_zeigen,pecho.zeigen,model_pecho_zeigen,, 1, 1, 1, 1
+access_rtemp_zeigen,rtemp.zeigen,model_rtemp_zeigen,, 1, 1, 1, 1
+access_tipcabezal_zeigen,tipcabezal.zeigen,model_tipcabezal_zeigen,, 1, 1, 1, 1
+access_inccabezal_zeigen,inccabezal.zeigen,model_inccabezal_zeigen,, 1, 1, 1, 1
+access_plato_zeigen,plato.zeigen,model_plato_zeigen,, 1, 1, 1, 1
+access_auscult_zeigen,auscult.zeigen,model_auscult_zeigen,, 1, 1, 1, 1
+access_rcp_zeigen,rcp.zeigen,model_rcp_zeigen,, 1, 1, 1, 1
+access_tiempo_zeigen,tiempo.zeigen,model_tiempo_zeigen,, 1, 1, 1, 1
+access_cabgir_zeigen,cabgir.zeigen,model_cabgir_zeigen,, 1, 1, 1, 1
+access_ajusdiot_zeigen,ajusdiot.zeigen,model_ajusdiot_zeigen,, 1, 1, 1, 1
+access_rango_zeigen,rango.zeigen,model_rango_zeigen,, 1, 1, 1, 1
+access_pressang_zeigen,pressang.zeigen,model_pressang_zeigen,, 1, 1, 1, 1
+access_reflejos_zeigen,reflejos.zeigen,model_reflejos_zeigen,, 1, 1, 1, 1
+access_reproduc_zeigen,reproduc.zeigen,model_reproduc_zeigen,, 1, 1, 1, 1
+access_ajusinterpu_zeigen,ajusinterpu.zeigen,model_ajusinterpu_zeigen,, 1, 1, 1, 1
+access_oculares_zeigen,oculares.zeigen,model_oculares_zeigen,, 1, 1, 1, 1
+access_errlin_zeigen,errlin.zeigen,model_errlin_zeigen,, 1, 1, 1, 1
+access_sindrom_zeigen,sindrom.zeigen,model_sindrom_zeigen,,1,1,1,1
+access_fichpacien_zeigen,fichpacien.zeigen,model_fichpacien_zeigen,,1,1,1,1
+access_pothot_zeigen,pothot.zeigen,model_pothot_zeigen,,1,1,1,1
+access_ocpris_zeigen,ocpris.zeigen,model_ocpris_zeigen,,1,1,1,1
+access_revol_zeigen,revol.zeigen,model_revol_zeigen,,1,1,1,1
+access_dimtina_zeigen,dimtina.zeigen,model_dimtina_zeigen,,1,1,1,1
+access_cian_zeigen,cian.zeigen,model_cian_zeigen,,1,1,1,1
+access_bombinfu_zeigen,bombinfu.zeigen,model_bombinfu_zeigen,,1,1,1,1
+access_rotor_zeigen,rotor.zeigen,model_rotor_zeigen,,1,1,1,1
+access_optica_zeigen,optica.zeigen,model_optica_zeigen,,1,1,1,1
+access_object_zeigen,object.zeigen,model_object_zeigen,,1,1,1,1
+access_motor_zeigen,motor.zeigen,model_motor_zeigen,,1,1,1,1
+access_suda_zeigen,suda.zeigen,model_suda_zeigen,,1,1,1,1
+access_llora_zeigen,llora.zeigen,model_llora_zeigen,,1,1,1,1
+access_dimmanti_zeigen,dimmanti.zeigen,model_dimmanti_zeigen,,1,1,1,1
+access_aumen_zeigen,aumen.zeigen,model_aumen_zeigen,,1,1,1,1
+access_enfo_zeigen,enfo.zeigen,model_enfo_zeigen,,1,1,1,1
+access_contrem_zeigen,contrem.zeigen,model_contrem_zeigen,,1,1,1,1
+access_table_zeigen,table.zeigen,model_table_zeigen,,1,1,1,1
+access_anchband_zeigen,anchband.zeigen,model_anchband_zeigen,,1,1,1,1
+access_platina_zeigen,platina.zeigen,model_platina_zeigen,,1,1,1,1
+access_tamplat_zeigen,tamplat.zeigen,model_tamplat_zeigen,,1,1,1,1
+access_sistopt_zeigen,sistopt.zeigen,model_sistopt_zeigen,,1,1,1,1
+access_compu_zeigen,compu.zeigen,model_compu_zeigen,,1,1,1,1
+access_procsimu_zeigen,procsimu.zeigen,model_procsimu_zeigen,,1,1,1,1
+access_rangfoto_zeigen,rangfoto.zeigen,model_rangfoto_zeigen,,1,1,1,1
+access_tope_zeigen,tope.zeigen,model_tope_zeigen,,1,1,1,1
+access_conden_zeigen,conden.zeigen,model_conden_zeigen,,1,1,1,1
+access_alcalong_zeigen,alcalong.zeigen,model_alcalong_zeigen,,1,1,1,1
+access_conect_zeigen,conect.zeigen,model_conect_zeigen,,1,1,1,1
+access_puntion_zeigen,puntion.zeigen,model_puntion_zeigen,,1,1,1,1
+access_alcafoto_zeigen,alcafoto.zeigen,model_alcafoto_zeigen,,1,1,1,1
+access_diafra_zeigen,diafra.zeigen,model_diafra_zeigen,,1,1,1,1
+access_portfilt_zeigen,portfilt.zeigen,model_portfilt_zeigen,,1,1,1,1
+access_prefoto_zeigen,prefoto.zeigen,model_prefoto_zeigen,,1,1,1,1
+access_ecg_zeigen,ecg.zeigen,model_ecg_zeigen,,1,1,1,1
+access_traq_zeigen,traq.zeigen,model_traq_zeigen,,1,1,1,1
+access_preslongond_zeigen,preslongond.zeigen,model_preslongond_zeigen,,1,1,1,1
+access_contilum_zeigen,contilum.zeigen,model_contilum_zeigen,,1,1,1,1
+access_ilum_zeigen,ilum.zeigen,model_ilum_zeigen,,1,1,1,1
+access_reprodlongonda_zeigen,reprodlongonda.zeigen,model_reprodlongonda_zeigen,,1,1,1,1
+access_descomp_zeigen,descomp.zeigen,model_descomp_zeigen,,1,1,1,1
+access_voz_zeigen,voz.zeigen,model_voz_zeigen,,1,1,1,1
+access_luzdisp_zeigen,luzdisp.zeigen,model_luzdisp_zeigen,,1,1,1,1
+access_kohler_zeigen,kohler.zeigen,model_kohler_zeigen,,1,1,1,1
+access_alimenelect_zeigen,alimenelect.zeigen,model_alimenelect_zeigen,,1,1,1,1
+access_arrast_zeigen,arrast.zeigen,model_arrast_zeigen,,1,1,1,1
+access_manvias_zeigen,manvias.zeigen,model_manvias_zeigen,,1,1,1,1
+access_sistgast_zeigen,sistgast.zeigen,model_sistgast_zeigen,,1,1,1,1
+access_fuentluz_zeigen,fuentluz.zeigen,model_fuentluz_zeigen,,1,1,1,1
+access_camdig_zeigen,camdig.zeigen,model_camdig_zeigen,,1,1,1,1
+access_filt_zeigen,filt.zeigen,model_filt_zeigen,,1,1,1,1
+access_voltout_zeigen,voltout.zeigen,model_voltout_zeigen,,1,1,1,1
+access_sisturog_zeigen,sisturog.zeigen,model_sisturog_zeigen,,1,1,1,1
+access_cuidpacien_zeigen,cuidpacien.zeigen,model_cuidpacien_zeigen,,1,1,1,1
+access_poten_zeigen,poten.zeigen,model_poten_zeigen,,1,1,1,1
+access_opccamposc_zeigen,opccamposc.zeigen,model_opccamposc_zeigen,,1,1,1,1
+access_sistnerv_zeigen,sistnerv.zeigen,model_sistnerv_zeigen,,1,1,1,1
+access_sistmet_zeigen,sistmet.zeigen,model_sistmet_zeigen,,1,1,1,1
+access_opcepiflo_zeigen,opcepiflo.zeigen,model_opcepiflo_zeigen,,1,1,1,1
+access_opccontfas_zeigen,opccontfas.zeigen,model_opccontfas_zeigen,,1,1,1,1
+access_monidesem_zeigen,monidesem.zeigen,model_monidesem_zeigen,,1,1,1,1
+access_disttrab_zeigen,disttrab.zeigen,model_disttrab_zeigen,,1,1,1,1
+access_sistelev_zeigen,sistelev.zeigen,model_sistelev_zeigen,,1,1,1,1
+access_garantia_zeigen,garantia.zeigen,model_garantia_zeigen,,1,1,1,1
+access_zoom_zeigen,zoom.zeigen,model_zoom_zeigen,,1,1,1,1
+access_observaciones_zeigen,observaciones.zeigen,model_observaciones_zeigen,,1,1,1,1
+access_capaci_zeigen,capaci.zeigen,model_capaci_zeigen,,1,1,1,1
+access_software_zeigen,software.zeigen,model_software_zeigen,,1,1,1,1
+access_video_zeigen,video.zeigen,model_video_zeigen,,1,1,1,1
+access_resolus_zeigen,resolus.zeigen,model_resolus_zeigen,,1,1,1,1
+access_fuentalim_zeigen,fuentalim.zeigen,model_fuentalim_zeigen,,1,1,1,1
+access_sonidos_zeigen,sonidos.zeigen,model_sonidos_zeigen,,1,1,1,1
