@@ -1893,6 +1893,7 @@ class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
     incrementables = fields.Float('% de Incrementables')
+    iva = fields.Float('IVA')
 
     @api.onchange('incrementables')
     def increment(self):
@@ -1966,6 +1967,7 @@ class PurchaseOrder(models.Model):
                 'amount_untaxed': order.currency_id.round(amount_untaxed),
                 'amount_tax': order.currency_id.round(amount_tax),
                 'amount_total': amount_untaxed + amount_tax,
+                'iva': (amount_untaxed + amount_tax)*.16,
             })
 
 
