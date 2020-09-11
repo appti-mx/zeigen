@@ -31,7 +31,7 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
     _description = 'Purchase Order related to Payments'
 
-    web_name = fields.Char(string='Nombre ss', related='name')
+    web_name = fields.Char(string='Nombre ss')
     short_description = fields.Text(string='Descripción corta')
     full_description = fields.Text(string='Descripción larga')
     stock_quantity = fields.Float(string='Cantidad en Inventario', related='qty_available')
