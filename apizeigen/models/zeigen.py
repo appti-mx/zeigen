@@ -43,7 +43,7 @@ class ProductTemplate(models.Model):
     length = fields.Float(string='Largo del equipo')
     width = fields.Float(string='Ancho del equipo')
     height = fields.Float(string='Alto del equipo ')
-    product_id = fields.Integer(related='id')
+    product_id = fields.Integer()
     category_id = fields.Float('Familia')
     category_name = fields.Char('Familia')
     sitio = fields.Boolean(string='Integración en Tecnofin')
