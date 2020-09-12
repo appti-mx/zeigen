@@ -1939,36 +1939,45 @@ class PurchaseOrder(models.Model):
 
     @api.depends('order_line.price_total')
     def _amount_all(self):
-        for order in self:
+        #for order in self:
+        order = self
+
+        amount_untaxed_a = amount_tax_a = porcentaje_a = subtotal_proveedor_a = 0.0
+
+        for line in order.order_line:
             amount_untaxed = amount_tax = porcentaje = subtotal_proveedor = 0.0
-            for line in order.order_line:
-                amount_untaxed += line.price_subtotal
-                amount_tax += line.price_tax
-                porcentaje += line.porcentaje
-                subtotal_proveedor += line.subtotal_proveedor
+            amount_untaxed += line.price_unit
+            amount_tax += line.price_tax
+            porcentaje += line.porcentaje
+            subtotal_proveedor += line.subtotal_proveedor
 
-                if order.currency_id.id != self.user_id.currency_id:
+            if order.currency_id.id != self.user_id.currency_id:
 
-                    amount_untaxed = order.currency_id._convert(amount_untaxed, self.user_id.currency_id, self.user_id.company_id, self.date_order)
-                    amount_tax = order.currency_id._convert(amount_tax, self.user_id.currency_id, self.user_id.company_id, self.date_order)
-                    porcentaje = order.currency_id._convert(porcentaje, self.user_id.currency_id, self.user_id.company_id, self.date_order)
-                    subtotal_proveedor = order.currency_id._convert(subtotal_proveedor, self.user_id.currency_id, self.user_id.company_id, self.date_order)
-
-
-                    line.price_subtotal =  amount_untaxed
-
-                if line.move_ids.ids != []:
-                    all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
-
-                    all_records.value = amount_untaxed + amount_tax
+                amount_untaxed = order.currency_id._convert(amount_untaxed, self.user_id.currency_id, self.user_id.company_id, self.date_order)
+                amount_tax = order.currency_id._convert(amount_tax, self.user_id.currency_id, self.user_id.company_id, self.date_order)
+                porcentaje = order.currency_id._convert(porcentaje, self.user_id.currency_id, self.user_id.company_id, self.date_order)
+                subtotal_proveedor = order.currency_id._convert(subtotal_proveedor, self.user_id.currency_id, self.user_id.company_id, self.date_order)
 
 
-            order.update({
-                'amount_untaxed': order.currency_id.round(amount_untaxed),
-                'amount_tax': order.currency_id.round(amount_tax),
-                'amount_total': amount_untaxed + amount_tax,
-                'iva': (amount_untaxed + amount_tax)*.16,
-            })
+                line.price_subtotal =  amount_untaxed
+
+                amount_untaxed_a += amount_untaxed
+                amount_tax_a += amount_tax
+                porcentaje_a += porcentaje
+                subtotal_proveedor_a += subtotal_proveedor
+
+            if line.move_ids.ids != []:
+                all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
+
+                all_records.value = amount_untaxed + amount_tax
+
+
+        order.update({
+            'amount_untaxed': order.currency_id.round(amount_untaxed_a),
+            'amount_tax': order.currency_id.round(amount_tax_a),
+            'amount_total': amount_untaxed_a + amount_tax_a,
+            'iva': (amount_untaxed_a + amount_tax_a)*.16,
+        })
 
 
 
@@ -1982,6 +1991,9 @@ class PurchaseOrderLine(models.Model):
     def _compute_amount(self):
         incrementable = 0
         subtotal_proveedor = 0
+
+        unitario= 0
+
         for line in self:
 
             vals = line._prepare_compute_all_values()
@@ -2035,6 +2047,8 @@ class PurchaseOrderLine(models.Model):
             'partner': self.order_id.partner_id,
             'porcentaje': self.porcentaje,
         }
+
+
 
 class StockQuant(models.Model):
     _inherit = 'stock.quant'
