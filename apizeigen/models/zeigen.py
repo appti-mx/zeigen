@@ -1975,7 +1975,8 @@ class PurchaseOrder(models.Model):
 
 
         order.update({
-            'amount_untaxed': order.currency_id.round(subtotal_proveedor_a),
+            #'amount_untaxed': order.currency_id.round(subtotal_proveedor_a),
+            'amount_untaxed': order.currency_id.round(subtotal_proveedor_a) + order.currency_id.round(amount_tax_a), 
             'amount_tax': order.currency_id.round(amount_tax_a),
             'amount_total': subtotal_proveedor_a +((subtotal_proveedor_a)*.16),
             'iva': (subtotal_proveedor_a)*.16,
