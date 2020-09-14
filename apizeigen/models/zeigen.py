@@ -1980,7 +1980,8 @@ class PurchaseOrder(models.Model):
             'amount_tax': order.currency_id.round(amount_tax_a),
             #'amount_total': subtotal_proveedor_a +((subtotal_proveedor_a)*.16),
             'amount_total': order.currency_id.round(subtotal_proveedor_a) + order.currency_id.round(amount_tax_a), 
-            'iva': (subtotal_proveedor_a)*.16,
+            #'iva': (subtotal_proveedor_a)*.16,
+            'iva': (order.currency_id.round(subtotal_proveedor_a) + order.currency_id.round(amount_tax_a))*.16, 
         })
 
 
