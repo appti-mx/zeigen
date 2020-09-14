@@ -1966,7 +1966,7 @@ class PurchaseOrder(models.Model):
                 porcentaje_a += porcentaje
                 subtotal_proveedor_a += subtotal_proveedor
 
-            #if line.move_ids.ids != []:
+            if line.move_ids.ids != []:
                 all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
 
                 all_records.value = subtotal_proveedor
