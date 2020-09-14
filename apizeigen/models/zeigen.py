@@ -1958,8 +1958,8 @@ class PurchaseOrder(models.Model):
                 subtotal_proveedor = order.currency_id._convert(subtotal_proveedor, self.user_id.currency_id, self.user_id.company_id, self.date_order)
 
 
-                line.price_subtotal =  subtotal_proveedor
-                #line.price_subtotal =  subtotal_proveedor + amount_tax 
+                #line.price_subtotal =  subtotal_proveedor
+                line.price_subtotal =  subtotal_proveedor + amount_tax 
 
                 amount_untaxed_a += amount_untaxed
                 amount_tax_a += amount_tax
