@@ -1958,7 +1958,8 @@ class PurchaseOrder(models.Model):
                 subtotal_proveedor = order.currency_id._convert(subtotal_proveedor, self.user_id.currency_id, self.user_id.company_id, self.date_order)
 
 
-                line.price_subtotal =  subtotal_proveedor
+                #line.price_subtotal =  subtotal_proveedor
+                line.price_subtotal =  subtotal_proveedor + amount_tax 
 
                 amount_untaxed_a += amount_untaxed
                 amount_tax_a += amount_tax
@@ -1969,6 +1970,8 @@ class PurchaseOrder(models.Model):
                 all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
 
                 all_records.value = subtotal_proveedor
+                
+                
 
 
         order.update({
