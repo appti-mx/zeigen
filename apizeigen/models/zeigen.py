@@ -1887,8 +1887,6 @@ class ProductTemplate(models.Model):
         return res
 
 
-
-
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
@@ -1927,7 +1925,8 @@ class PurchaseOrder(models.Model):
                 'porcentaje': incrementable * vals['product_qty'],
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
-                'price_subtotal': (vals['price_unit'] * vals['product_qty']),
+                'price_subtotal': (subtotal_proveedor * vals['product_qty']),
+                #'price_subtotal': (vals['price_unit'] * vals['product_qty']),
                 'subtotal_proveedor':subtotal_proveedor *vals['product_qty'],
             })
 
@@ -2020,7 +2019,8 @@ class PurchaseOrderLine(models.Model):
                 'porcentaje': incrementable * vals['product_qty'],
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
-                'price_subtotal':(vals['price_unit'] * vals['product_qty']),
+                'price_subtotal':(subtotal_proveedor * vals['product_qty']),
+                #'price_subtotal': (vals['price_unit'] * vals['product_qty']),
                 'subtotal_proveedor':subtotal_proveedor *vals['product_qty'],
             })
 
@@ -2047,6 +2047,7 @@ class PurchaseOrderLine(models.Model):
             'partner': self.order_id.partner_id,
             'porcentaje': self.porcentaje,
         }
+
 
 
 
