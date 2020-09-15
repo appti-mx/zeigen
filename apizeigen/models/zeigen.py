@@ -31,24 +31,23 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
     _description = 'Purchase Order related to Payments'
 
-    web_name = fields.Char(string='Nombre ss')
+    web_name = fields.Char(string='Nombre', related='name')
     short_description = fields.Text(string='Descripción corta')
-    full_description = fields.Text(string='Descripción larga')
+    full_description = fields.Text(string='Descripción larga sitio')
     stock_quantity = fields.Float(string='Cantidad en Inventario', related='qty_available')
     disable_buy_button = fields.Boolean('Habilita botón de compra')
-    price = fields.Float(string='Precio de Venta', related='list_price')
     old_price = fields.Float(string='Precio anterior del producto')
     published = fields.Boolean('Publicado en Tecnofin')
     weight = fields.Float(string='Peso')
     length = fields.Float(string='Largo del equipo')
     width = fields.Float(string='Ancho del equipo')
     height = fields.Float(string='Alto del equipo ')
-    product_id = fields.Integer()
+    product_id = fields.Integer(related='id')
     category_id = fields.Float('Familia')
     category_name = fields.Char('Familia')
     sitio = fields.Boolean(string='Integración en Tecnofin')
     sku = fields.Char(string='SKU')
-    special_price = fields.Float(string='Precio especial', related='list_price')
+    special_price = fields.Float(string='Precio especial')
     product_cost = fields.Float(string='Precio al costo del producto.', related='list_price')
     tag_ids = fields.Many2many('tags.zeigen')
 
@@ -149,7 +148,7 @@ class ProductTemplate(models.Model):
     sistelev = fields.Many2one('sistelev.zeigen', 'Sistema de elevación')
     garantia = fields.Many2one('garantia.zeigen', 'Garantía')
     zoom = fields.Many2one('zoom.zeigen', 'Zoom')
-    observaciones = fields.Many2one('observaciones.zeigen', 'Observaciones')
+    observaciones = fields.Char('Observaciones')
     capaci = fields.Many2one('capaci.zeigen', 'Capacidad')
     software = fields.Many2one('software.zeigen', 'Software')
     video = fields.Many2one('video.zeigen', 'Video')
@@ -157,7 +156,16 @@ class ProductTemplate(models.Model):
     fuentalim = fields.Many2one('fuentalim.zeigen', 'Fuente de alimentación')
     sonidos = fields.Many2one('sonidos.zeigen', 'Sonidos')
 
+    def _compute_template_price(self):
+        prices = self._compute_template_price_no_inverse()
+        for template in self:
+            template.price = prices.get(template.id, 0.0)
 
+            vals = {
+                "price": prices.get(template.id, 0.0)
+            }
+
+            self.write(vals)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -176,9 +184,6 @@ class ProductTemplate(models.Model):
             rjson = r.json()
 
             access_token = rjson['access_token']
-            token_type = rjson['token_type']
-            expires_in = rjson['expires_in']
-            error_description = rjson['error_description']
 
             obj2 = {
                 "product": {
@@ -218,7 +223,7 @@ class ProductTemplate(models.Model):
 
             except:
 
-                raise UserError(rproduct.text)
+                raise UserError('error')
 
         ''' Store the initial standard price in order to be able to retrieve the cost of a product template for a given date'''
         templates = super(ProductTemplate, self).create(vals_list)
@@ -248,6 +253,7 @@ class ProductTemplate(models.Model):
 
     # @api.multi
     def write(self, vals):
+        sitio = []
 
         sitio = self.sitio
         if vals.get('sitio'):
@@ -285,41 +291,44 @@ class ProductTemplate(models.Model):
                 rproduct = requests.get(url, headers=headers)
                 rjson = rproduct.json()
 
+                name=[]
                 name = str(self.name)
                 if vals.get('name'):
                     name = vals['name']
 
+                short_description = []
                 short_description = str(self.short_description)
                 if vals.get('short_description'):
                     short_description = vals['short_description']
-                else:
-                    short_description=''
 
+                full_description = []
                 full_description = str(self.full_description)
                 if vals.get('full_description'):
                     full_description = vals['full_description']
-                else:
-                    full_description = ''
 
+                stock_quantity=[]
                 stock_quantity = self.qty_available
                 if vals.get('stock_quantity'):
                     stock_quantity = vals['stock_quantity']
 
+
                 if vals.get('qty_available'):
                     stock_quantity = vals['qty_available']
 
+                if vals.get('qty_available')==0:
+                    stock_quantity = 0
+
+                disable_buy_button = []
                 disable_buy_button = str(self.disable_buy_button)
                 if vals.get('disable_buy_button'):
                     disable_buy_button = vals['disable_buy_button']
 
+                price = []
                 price = str(self.price)
                 if vals.get('price'):
                     price = vals['price']
 
-                qty_available = str(self.qty_available)
-                if vals.get('qty_available'):
-                    qty_available = vals['qty_available']
-
+                old_price= []
                 old_price = str(self.old_price)
                 if vals.get('old_price'):
                     old_price = vals['old_price']
@@ -352,8 +361,6 @@ class ProductTemplate(models.Model):
                 category_id = str(self.category_id)
                 if vals.get('category_id'):
                     category_id = vals['category_id']
-                else:
-                    category_id = ''
 
                 category_name = str(self.category_name)
                 if vals.get('category_name'):
@@ -361,17 +368,25 @@ class ProductTemplate(models.Model):
                 else:
                     category_name = ''
 
+                sitio=[]
                 sitio = str(self.sitio)
                 if vals.get('sitio'):
                     sitio = vals['sitio']
 
+                sku = []
                 sku = str(self.sku)
                 if vals.get('sku'):
                     sku = vals['sku']
 
+                product_cost = []
                 product_cost = str(self.product_cost)
                 if vals.get('product_cost'):
                     product_cost = vals['product_cost']
+
+                tags = []
+                if self.tag_ids != False:
+                    for tag_ in self.tag_ids:
+                        tags.append(str(tag_.name))
 
 
                 atributstr = [{"\"attribute_type_id\"": 0, "\"custom_value\"": 'null'
@@ -388,6 +403,9 @@ class ProductTemplate(models.Model):
 
                     marca_show = ''
 
+                    if  marca.nombre == False:
+                        marca.nombre= ''
+
                     if marca.show_on_product_page:
                         marca_show = "true"
                     else:
@@ -396,7 +414,25 @@ class ProductTemplate(models.Model):
                     marcastr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null', "\"allow_filtering\"": 'false',
                                 "\"show_on_product_page\"": marca_show, "\"display_order\"": 1,
                                 "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
-                            "\"specification_attribute_id\"": marca.id_atribute,
+                            "\"specification_attribute_id\"": 2,
+                            "\"name\"": "\"" + str(marca.display_name) + "\"", "\"color_squares_rgb\"": 'null',
+                            "\"display_order\"": 0}}
+
+                    atributstr.append(marcastr)
+
+                if vals.get('marca') == False:
+
+                    marca.nombre= ''
+
+                    if marca.show_on_product_page:
+                        marca_show = "true"
+                    else:
+                        marca_show = "false"
+
+                    marcastr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null', "\"allow_filtering\"": 'false',
+                                "\"show_on_product_page\"": marca_show, "\"display_order\"": 1,
+                                "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
+                            "\"specification_attribute_id\"": 2,
                             "\"name\"": "\"" + str(marca.display_name) + "\"", "\"color_squares_rgb\"": 'null',
                             "\"display_order\"": 0}}
 
@@ -447,8 +483,7 @@ class ProductTemplate(models.Model):
                 ojos = self.ojos
                 if vals.get('ojos'):
                     id_ojos = self.env['ojos.zeigen'].search([('id', '=', vals['ojos'])])
-                    ojos = id_
-                    ojos[0]
+                    ojos = id_ojos[0]
                     ojosstr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null', "\"allow_filtering\"": 'false',
                                "\"show_on_product_page\"": 'true', "\"display_order\"": 1,
                                "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
@@ -1300,8 +1335,7 @@ class ProductTemplate(models.Model):
                 preslongond = self.preslongond
                 if vals.get('preslongond'):
                     id_preslongond = self.env['preslongond.zeigen'].search([('id', '=', vals['preslongond'])])
-                    preslongond = id_
-                    preslongond[0]
+                    preslongond = id_preslongond[0]
                     preslongondstr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null',
                                       "\"allow_filtering\"": 'false', "\"show_on_product_page\"": 'true',
                                       "\"display_order\"": 1, "\"attribute_type\"": "\"Option\"",
@@ -1561,8 +1595,7 @@ class ProductTemplate(models.Model):
                 opccamposc = self.opccamposc
                 if vals.get('opccamposc'):
                     id_opccamposc = self.env['opccamposc.zeigen'].search([('id', '=', vals['opccamposc'])])
-                    opccamposc = id_
-                    opccamposc[0]
+                    opccamposc = id_opccamposc[0]
                     opccamposcstr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null',
                                      "\"allow_filtering\"": 'false', "\"show_on_product_page\"": 'true',
                                      "\"display_order\"": 1, "\"attribute_type\"": "\"Option\"",
@@ -1794,6 +1827,11 @@ class ProductTemplate(models.Model):
 
                     atributstr.append(sonidosstr)
 
+
+
+
+
+
                 atributstr_ = str(atributstr)
 
                 atributstr_ = atributstr_.replace("'", "")
@@ -1824,6 +1862,7 @@ class ProductTemplate(models.Model):
                                 "sitio": str(sitio),
                                 "sku": str(sku),
                                 "product_cost": str(product_cost),
+                                "tags": tags,
                                 "specification_attributes": atributstrl_
                             }
                         }
@@ -1855,6 +1894,7 @@ class ProductTemplate(models.Model):
                             "category_name":str(self.category_name),
                             "sitio":str(self.sitio),
                             "sku":str(self.sku),
+                            "tags": tags,
                             "product_cost":str(self.list_price)
                         }
                     }
@@ -1903,42 +1943,41 @@ class PurchaseOrder(models.Model):
             vals = line._prepare_compute_all_values()
 
             if self.incrementables > 0:
-
-                incrementable =  (vals['price_unit']*self.incrementables/100)
+                incrementable = (vals['price_unit'] * self.incrementables / 100)
 
                 unitario = vals['price_unit'] + incrementable
 
                 subtotal_proveedor = vals['price_unit'] + incrementable
 
-                vals.update({'price_unit': unitario, 'porcentaje':incrementable, 'subtotal_proveedor':subtotal_proveedor})
-
+                vals.update(
+                    {'price_unit': unitario, 'porcentaje': incrementable, 'subtotal_proveedor': subtotal_proveedor})
 
             taxes = line.taxes_id.compute_all(
-            vals['price_unit'],
-            vals['currency_id'],
-            vals['product_qty'],
-            vals['product'],
-            vals['partner'])
-
+                vals['price_unit'],
+                vals['currency_id'],
+                vals['product_qty'],
+                vals['product'],
+                vals['partner'])
 
             line.update({
                 'porcentaje': incrementable * vals['product_qty'],
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
                 'price_subtotal': (subtotal_proveedor * vals['product_qty']),
-                #'price_subtotal': (vals['price_unit'] * vals['product_qty']),
-                'subtotal_proveedor':subtotal_proveedor *vals['product_qty'],
+                # 'price_subtotal': (vals['price_unit'] * vals['product_qty']),
+                'subtotal_proveedor': subtotal_proveedor * vals['product_qty'],
             })
 
             if line.move_ids.ids != []:
+                all_records = self.env['stock.valuation.layer'].search(
+                    [('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
 
-                all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
-
-                all_records.value = taxes['total_excluded'] + incrementable + sum(t.get('amount', 0.0) for t in taxes.get('taxes', []))
+                all_records.value = taxes['total_excluded'] + incrementable + sum(
+                    t.get('amount', 0.0) for t in taxes.get('taxes', []))
 
     @api.depends('order_line.price_total')
     def _amount_all(self):
-        #for order in self:
+        # for order in self:
         order = self
 
         amount_untaxed_a = amount_tax_a = porcentaje_a = subtotal_proveedor_a = 0.0
@@ -1951,15 +1990,13 @@ class PurchaseOrder(models.Model):
             subtotal_proveedor += line.subtotal_proveedor
 
             if order.currency_id.id != self.user_id.currency_id:
-
                 amount_untaxed = order.currency_id._convert(amount_untaxed, self.user_id.currency_id, self.user_id.company_id, self.date_order)
                 amount_tax = order.currency_id._convert(amount_tax, self.user_id.currency_id, self.user_id.company_id, self.date_order)
                 porcentaje = order.currency_id._convert(porcentaje, self.user_id.currency_id, self.user_id.company_id, self.date_order)
                 subtotal_proveedor = order.currency_id._convert(subtotal_proveedor, self.user_id.currency_id, self.user_id.company_id, self.date_order)
 
-
-                #line.price_subtotal =  subtotal_proveedor
-                line.price_subtotal =  subtotal_proveedor + amount_tax 
+                # line.price_subtotal =  subtotal_proveedor
+                line.price_subtotal = subtotal_proveedor + amount_tax
 
                 amount_untaxed_a += amount_untaxed
                 amount_tax_a += amount_tax
@@ -1967,29 +2004,26 @@ class PurchaseOrder(models.Model):
                 subtotal_proveedor_a += subtotal_proveedor
 
             if line.move_ids.ids != []:
-                all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
+                all_records = self.env['stock.valuation.layer'].search(
+                    [('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
 
-                all_records.value = line.price_subtotal    
-                
-                
-
+                all_records.value = line.price_subtotal
 
         order.update({
             'amount_untaxed': order.currency_id.round(subtotal_proveedor_a),
-            #'amount_untaxed': order.currency_id.round(subtotal_proveedor_a) + order.currency_id.round(amount_tax_a), 
+            # 'amount_untaxed': order.currency_id.round(subtotal_proveedor_a) + order.currency_id.round(amount_tax_a),
             'amount_tax': order.currency_id.round(amount_tax_a),
-            #'amount_total': subtotal_proveedor_a +((subtotal_proveedor_a)*.16),
-            'amount_total': order.currency_id.round(subtotal_proveedor_a) + order.currency_id.round(amount_tax_a), 
-            #'iva': (subtotal_proveedor_a)*.16,
-            'iva': (order.currency_id.round(subtotal_proveedor_a) + order.currency_id.round(amount_tax_a))*.16, 
+            # 'amount_total': subtotal_proveedor_a +((subtotal_proveedor_a)*.16),
+            'amount_total': order.currency_id.round(subtotal_proveedor_a) + order.currency_id.round(amount_tax_a),
+            # 'iva': (subtotal_proveedor_a)*.16,
+            'iva': (order.currency_id.round(subtotal_proveedor_a) + order.currency_id.round(amount_tax_a)) * .16,
         })
-
 
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
-    porcentaje= fields.Float('Porcentaje')
+    porcentaje = fields.Float('Porcentaje')
     subtotal_proveedor = fields.Float('Sub Proveedor')
 
     @api.depends('product_qty', 'price_unit', 'taxes_id')
@@ -1997,20 +2031,21 @@ class PurchaseOrderLine(models.Model):
         incrementable = 0
         subtotal_proveedor = 0
 
-        unitario= 0
+        unitario = 0
 
         for line in self:
 
             vals = line._prepare_compute_all_values()
 
             if self.order_id.incrementables > 0:
-                incrementable = (vals['price_unit'] * self.order_id.incrementables / 100 )
+                incrementable = (vals['price_unit'] * self.order_id.incrementables / 100)
 
                 unitario = vals['price_unit'] + incrementable
 
                 subtotal_proveedor = vals['price_unit'] + incrementable
 
-                vals.update({'price_unit': unitario, 'porcentaje':incrementable, 'subtotal_proveedor':subtotal_proveedor})
+                vals.update(
+                    {'price_unit': unitario, 'porcentaje': incrementable, 'subtotal_proveedor': subtotal_proveedor})
 
             taxes = line.taxes_id.compute_all(
                 vals['price_unit'],
@@ -2020,21 +2055,21 @@ class PurchaseOrderLine(models.Model):
                 vals['partner'],
                 vals['porcentaje'])
 
-
             line.update({
                 'porcentaje': incrementable * vals['product_qty'],
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
-                'price_subtotal':(subtotal_proveedor * vals['product_qty']),
-                #'price_subtotal': (vals['price_unit'] * vals['product_qty']),
-                'subtotal_proveedor':subtotal_proveedor *vals['product_qty'],
+                'price_subtotal': (subtotal_proveedor * vals['product_qty']),
+                # 'price_subtotal': (vals['price_unit'] * vals['product_qty']),
+                'subtotal_proveedor': subtotal_proveedor * vals['product_qty'],
             })
 
             if line.move_ids.ids != []:
+                all_records = self.env['stock.valuation.layer'].search(
+                    [('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
 
-                all_records = self.env['stock.valuation.layer'].search([('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
-
-                all_records.value = taxes['total_excluded'] + incrementable + sum(t.get('amount', 0.0) for t in taxes.get('taxes', []))
+                all_records.value = taxes['total_excluded'] + incrementable + sum(
+                    t.get('amount', 0.0) for t in taxes.get('taxes', []))
 
         return line
 
@@ -2053,30 +2088,3 @@ class PurchaseOrderLine(models.Model):
             'partner': self.order_id.partner_id,
             'porcentaje': self.porcentaje,
         }
-
-
-
-
-class StockQuant(models.Model):
-    _inherit = 'stock.quant'
-    _description = 'Quants'
-    _rec_name = 'product_id'
-
-    def write(self, vals):
-        """ Override to handle the "inventory mode" and create the inventory move. """
-        if self._is_inventory_mode() and 'inventory_quantity' in vals:
-            if any(quant.location_id.usage == 'inventory' for quant in self):
-                # Do nothing when user tries to modify manually a inventory loss
-                return
-            allowed_fields = self._get_inventory_fields_write()
-            if any([field for field in vals.keys() if field not in allowed_fields]):
-                raise UserError(_("Quant's edition is restricted, you can't do this operation."))
-            self = self.sudo()
-
-            self.product_tmpl_id.qty_available = vals['inventory_quantity']
-            self.product_tmpl_id.inventory_quantity = vals['inventory_quantity']
-
-            return super(StockQuant, self).write(vals)
-        return super(StockQuant, self).write(vals)
-
-
