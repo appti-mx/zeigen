@@ -168,7 +168,7 @@ class ProductTemplate(models.Model):
             self.write(vals)
 
     @api.model_create_multi
-    def create(self, vals_list):
+    def createe(self, vals_list):
 
         datos = vals_list[0]
 
@@ -252,7 +252,7 @@ class ProductTemplate(models.Model):
         return templates
 
     # @api.multi
-    def write(self, vals):
+    def writee(self, vals):
         sitio = []
 
         sitio = self.sitio
