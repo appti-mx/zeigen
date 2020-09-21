@@ -48,8 +48,13 @@ class ProductTemplate(models.Model):
     sitio = fields.Boolean(string='Integración en Tecnofin')
     sku = fields.Char(string='SKU')
     special_price = fields.Float(string='Precio especial')
-    product_cost = fields.Float(string='Precio al costo del producto.', related='list_price')
+    product_cost = fields.Float(string='Precio al costo del producto.')
     tag_ids = fields.Many2many('tags.zeigen')
+
+    price = fields.Float(
+        'Price', compute='_compute_product_price',
+        digits='Product Price', inverse='_set_product_price', related='list_price')
+    # price_extra: catalog extra value only, sum of variant extra attributes
 
     marca = fields.Many2one('marca.zeigen', 'Marca')
     subcategoria = fields.Many2one('subcategoria.zeigen','Subcategoría')
@@ -242,11 +247,13 @@ class ProductTemplate(models.Model):
 
         return templates
 
+    @api.onchange('x_familia')
+    def _onchange_budget(self):
+        self.category_name = str(self.x_familia)
+
     # @api.multi
     def write(self, vals):
         sitio = []
-        
-        
 
         sitio = self.sitio
         if vals.get('sitio'):
@@ -777,44 +784,32 @@ class ProductTemplate(models.Model):
 
                 incluye = self.incluye
                 if vals.get('incluye'):
-                    id_incluye = self.env['incluye.zeigen'].search([('id', '=', vals['incluye'])])
-                    incluye = id_incluye[0]
 
                     incluye_show = ''
 
-                    if incluye.nombre == False:
-                        incluye.nombre = ''
+                    if incluye == False:
+                        incluye = ''
 
-                    if incluye.show_on_product_page:
-                        incluye_show = "true"
-                    else:
-                        incluye_show = "false"
 
                     incluyestr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null',
                                   "\"allow_filtering\"": 'false',
-                                  "\"show_on_product_page\"": incluye_show, "\"display_order\"": 1,
-                                  "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
+                                  "\"show_on_product_page\"": 'true', "\"display_order\"": 1,
+                                  "\"attribute_type\"": "\"Custom Text\"", "\"specification_attribute_option\"": {
                             "\"specification_attribute_id\"": 12,
-                            "\"name\"": "\"" + str(incluye.display_name) + "\"", "\"color_squares_rgb\"": 'null',
+                            "\"name\"": "\"" + str(incluye) + "\"", "\"color_squares_rgb\"": 'null',
                             "\"display_order\"": 0}}
 
                     atributstr.append(incluyestr)
 
                 if vals.get('incluye') == False:
 
-                    incluye_show = ''
-
-                    if incluye.show_on_product_page:
-                        incluye_show = "true"
-                    else:
-                        incluye_show = "false"
 
                     incluyestr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null',
                                   "\"allow_filtering\"": 'false',
-                                  "\"show_on_product_page\"": incluye_show, "\"display_order\"": 1,
-                                  "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
+                                  "\"show_on_product_page\"": 'true', "\"display_order\"": 1,
+                                  "\"attribute_type\"": "\"Custom text\"", "\"specification_attribute_option\"": {
                             "\"specification_attribute_id\"": 12,
-                            "\"name\"": "\"" + str(incluye.display_name) + "\"", "\"color_squares_rgb\"": 'null',
+                            "\"name\"": "\"" + str(incluye) + "\"", "\"color_squares_rgb\"": 'null',
                             "\"display_order\"": 0}}
 
                     atributstr.append(incluyestr)
@@ -1069,7 +1064,7 @@ class ProductTemplate(models.Model):
                     else:
                         tipcabezal_show = "false"
 
-                    tipcabezal = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null',
+                    tipcabezalstr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null',
                                   "\"allow_filtering\"": 'false',
                                   "\"show_on_product_page\"": tipcabezal_show, "\"display_order\"": 1,
                                   "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
@@ -1113,7 +1108,7 @@ class ProductTemplate(models.Model):
                     else:
                         inccabezal_show = "false"
 
-                    inccabezal = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null',
+                    inccabezalstr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null',
                                   "\"allow_filtering\"": 'false',
                                   "\"show_on_product_page\"": inccabezal_show, "\"display_order\"": 1,
                                   "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
@@ -3491,7 +3486,7 @@ class ProductTemplate(models.Model):
 
                 voz = self.voz
                 if vals.get('voz'):
-                    id_voz = self.env[' voz.zeigen'].search([('id', '=', vals['voz'])])
+                    id_voz = self.env['voz.zeigen'].search([('id', '=', vals['voz'])])
                     voz = id_voz[0]
 
                     voz_show = ''
@@ -4534,20 +4529,14 @@ class ProductTemplate(models.Model):
                 observaciones = self.observaciones
                 if vals.get('observaciones'):
 
-                    observaciones_show = ''
-
                     if observaciones == False:
                         observaciones = ''
 
-                    if observaciones.show_on_product_page:
-                        observaciones_show = "true"
-                    else:
-                        observaciones_show = "false"
 
                     observacionesstr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null',
                                         "\"allow_filtering\"": 'false',
                                         "\"show_on_product_page\"": 'true', "\"display_order\"": 1,
-                                        "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
+                                        "\"attribute_type\"": "\"Custom text\"", "\"specification_attribute_option\"": {
                             "\"specification_attribute_id\"": 102,
                             "\"name\"": "\"" + str(observaciones) + "\"", "\"color_squares_rgb\"": 'null',
                             "\"display_order\"": 0}}
@@ -4558,15 +4547,11 @@ class ProductTemplate(models.Model):
 
                     observaciones = ''
 
-                    if observaciones.show_on_product_page:
-                        observaciones_show = "true"
-                    else:
-                        observaciones_show = "false"
 
                     observacionesstr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null',
                                         "\"allow_filtering\"": 'false',
                                         "\"show_on_product_page\"": 'true', "\"display_order\"": 1,
-                                        "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
+                                        "\"attribute_type\"": "\"Custom text\"", "\"specification_attribute_option\"": {
                             "\"specification_attribute_id\"": 102,
                             "\"name\"": "\"" + str(observaciones) + "\"", "\"color_squares_rgb\"": 'null',
                             "\"display_order\"": 0}}
@@ -4796,7 +4781,7 @@ class ProductTemplate(models.Model):
 
                     sonidos_show = ''
 
-                    if fsonidos.nombre == False:
+                    if sonidos.nombre == False:
                         sonidos.nombre = ''
 
                     if sonidos.show_on_product_page:
