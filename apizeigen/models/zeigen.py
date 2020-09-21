@@ -4540,13 +4540,11 @@ class ProductTemplate(models.Model):
 
                 observaciones = self.observaciones
                 if vals.get('observaciones'):
-                    id_observaciones = self.env['observaciones.zeigen'].search([('id', '=', vals['observaciones'])])
-                    observaciones = id_observaciones[0]
 
                     observaciones_show = ''
 
-                    if observaciones.nombre == False:
-                        observaciones.nombre = ''
+                    if observaciones == False:
+                        observaciones = ''
 
                     if observaciones.show_on_product_page:
                         observaciones_show = "true"
@@ -4558,14 +4556,14 @@ class ProductTemplate(models.Model):
                                         "\"show_on_product_page\"": observaciones_show, "\"display_order\"": 1,
                                         "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
                             "\"specification_attribute_id\"": 102,
-                            "\"name\"": "\"" + str(observaciones.display_name) + "\"", "\"color_squares_rgb\"": 'null',
+                            "\"name\"": "\"" + str(observaciones) + "\"", "\"color_squares_rgb\"": 'null',
                             "\"display_order\"": 0}}
 
                     atributstr.append(observacionesstr)
 
                 if vals.get('observaciones') == False:
 
-                    observaciones.nombre = ''
+                    observaciones = ''
 
                     if observaciones.show_on_product_page:
                         observaciones_show = "true"
@@ -4577,7 +4575,7 @@ class ProductTemplate(models.Model):
                                         "\"show_on_product_page\"": observaciones_show, "\"display_order\"": 1,
                                         "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
                             "\"specification_attribute_id\"": 102,
-                            "\"name\"": "\"" + str(observaciones.display_name) + "\"", "\"color_squares_rgb\"": 'null',
+                            "\"name\"": "\"" + str(observaciones) + "\"", "\"color_squares_rgb\"": 'null',
                             "\"display_order\"": 0}}
 
                     atributstr.append(observacionesstr)
