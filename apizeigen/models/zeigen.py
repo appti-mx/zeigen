@@ -246,7 +246,7 @@ class ProductTemplate(models.Model):
     def write(self, vals):
         sitio = []
         
-        self.price = self.list_price
+        
 
         sitio = self.sitio
         if vals.get('sitio'):
