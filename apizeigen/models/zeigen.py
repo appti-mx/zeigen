@@ -156,16 +156,7 @@ class ProductTemplate(models.Model):
     fuentalim = fields.Many2one('fuentalim.zeigen', 'Fuente de alimentación')
     sonidos = fields.Many2one('sonidos.zeigen', 'Sonidos')
 
-    def _compute_template_price(self):
-        prices = self._compute_template_price_no_inverse()
-        for template in self:
-            template.price = prices.get(template.id, 0.0)
 
-            vals = {
-                "price": prices.get(template.id, 0.0)
-            }
-
-            self.write(vals)
 
     @api.model_create_multi
     def create(self, vals_list):
