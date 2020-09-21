@@ -48,8 +48,7 @@ class ProductTemplate(models.Model):
     sitio = fields.Boolean(string='Integración en Tecnofin')
     sku = fields.Char(string='SKU')
     special_price = fields.Float(string='Precio especial')
-    product_cost = fields.Float(string='Precio al costo del producto.')
-    price = fields.Float(string='Precio', related='list_price')
+    product_cost = fields.Float(string='Precio al costo del producto.', related='list_price')
     tag_ids = fields.Many2many('tags.zeigen')
 
     marca = fields.Many2one('marca.zeigen', 'Marca')
