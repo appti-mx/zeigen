@@ -4553,7 +4553,7 @@ class ProductTemplate(models.Model):
 
                     observacionesstr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null',
                                         "\"allow_filtering\"": 'false',
-                                        "\"show_on_product_page\"": observaciones_show, "\"display_order\"": 1,
+                                        "\"show_on_product_page\"": 'true', "\"display_order\"": 1,
                                         "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
                             "\"specification_attribute_id\"": 102,
                             "\"name\"": "\"" + str(observaciones) + "\"", "\"color_squares_rgb\"": 'null',
@@ -4572,7 +4572,7 @@ class ProductTemplate(models.Model):
 
                     observacionesstr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null',
                                         "\"allow_filtering\"": 'false',
-                                        "\"show_on_product_page\"": observaciones_show, "\"display_order\"": 1,
+                                        "\"show_on_product_page\"": 'true', "\"display_order\"": 1,
                                         "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
                             "\"specification_attribute_id\"": 102,
                             "\"name\"": "\"" + str(observaciones) + "\"", "\"color_squares_rgb\"": 'null',
