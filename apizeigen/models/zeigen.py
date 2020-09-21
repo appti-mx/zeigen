@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
 import itertools
-
 import requests
-
-
 from odoo import api, fields, models, tools, _, SUPERUSER_ID
 from odoo.exceptions import ValidationError, RedirectWarning, UserError
 from odoo.osv import expression
 from odoo.tools import pycompat
 from requests.auth import HTTPBasicAuth
 import json
-
 
 class Apizeigen(models.Model):
     _name = 'api.zeigen'
