@@ -35,8 +35,6 @@
                     <group string="Atributos en sitio web">
                         <field name="marca"/>
                         <field name="subcategoria"/>
-                        <field name="marca"/>
-                        <field name="subcategoria"/>
                         <field name="marcasanatom"/>
                         <field name="materiales"/>
                         <field name="ojos"/>
