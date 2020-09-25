@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 import itertools
+
 import requests
+
+
 from odoo import api, fields, models, tools, _, SUPERUSER_ID
 from odoo.exceptions import ValidationError, RedirectWarning, UserError
 from odoo.osv import expression
 from odoo.tools import pycompat
 from requests.auth import HTTPBasicAuth
 import json
+
 
 class Apizeigen(models.Model):
     _name = 'api.zeigen'
@@ -61,7 +65,7 @@ class ProductTemplate(models.Model):
     nivel = fields.Many2one('nivel.zeigen', 'Nivel')
     pulso = fields.Many2one('pulso.zeigen', 'Pulso')
     respiracion = fields.Many2one('respiracion.zeigen', 'Respiración')
-    incluye = fields.Text('Incluye')
+    incluye = fields.Many2one('incluye.zeigen', 'Incluye')
     cuerpo = fields.Many2one('cuerpo.zeigen', 'Cuerpo')
     cabezal = fields.Many2one('cabezal.zeigen', 'Cabezal')
     velocidad = fields.Many2one('velocidad.zeigen', 'Velocidad')
@@ -149,7 +153,7 @@ class ProductTemplate(models.Model):
     sistelev = fields.Many2one('sistelev.zeigen', 'Sistema de elevación')
     garantia = fields.Many2one('garantia.zeigen', 'Garantía')
     zoom = fields.Many2one('zoom.zeigen', 'Zoom')
-    observaciones = fields.Text('Observaciones')
+    observaciones = fields.Many2one('observaciones.zeigen', 'Observaciones')
     capaci = fields.Many2one('capaci.zeigen', 'Capacidad')
     software = fields.Many2one('software.zeigen', 'Software')
     video = fields.Many2one('video.zeigen', 'Video')
@@ -780,32 +784,44 @@ class ProductTemplate(models.Model):
 
                 incluye = self.incluye
                 if vals.get('incluye'):
+                    id_incluye = self.env['incluye.zeigen'].search([('id', '=', vals['incluye'])])
+                    incluye = id_incluye[0]
 
                     incluye_show = ''
 
-                    if incluye == False:
-                        incluye = ''
+                    if incluye.nombre == False:
+                        incluye.nombre = ''
 
+                    if incluye.show_on_product_page:
+                        incluye_show = "true"
+                    else:
+                        incluye_show = "false"
 
                     incluyestr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null',
                                   "\"allow_filtering\"": 'false',
-                                  "\"show_on_product_page\"": 'true', "\"display_order\"": 1,
-                                  "\"attribute_type\"": "\"Custom Text\"", "\"specification_attribute_option\"": {
+                                  "\"show_on_product_page\"": incluye_show, "\"display_order\"": 1,
+                                  "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
                             "\"specification_attribute_id\"": 12,
-                            "\"name\"": "\"" + str(incluye) + "\"", "\"color_squares_rgb\"": 'null',
+                            "\"name\"": "\"" + str(incluye.display_name) + "\"", "\"color_squares_rgb\"": 'null',
                             "\"display_order\"": 0}}
 
                     atributstr.append(incluyestr)
 
                 if vals.get('incluye') == False:
 
+                    incluye_show = ''
+
+                    if incluye.show_on_product_page:
+                        incluye_show = "true"
+                    else:
+                        incluye_show = "false"
 
                     incluyestr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null',
                                   "\"allow_filtering\"": 'false',
-                                  "\"show_on_product_page\"": 'true', "\"display_order\"": 1,
-                                  "\"attribute_type\"": "\"Custom text\"", "\"specification_attribute_option\"": {
+                                  "\"show_on_product_page\"": incluye_show, "\"display_order\"": 1,
+                                  "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
                             "\"specification_attribute_id\"": 12,
-                            "\"name\"": "\"" + str(incluye) + "\"", "\"color_squares_rgb\"": 'null',
+                            "\"name\"": "\"" + str(incluye.display_name) + "\"", "\"color_squares_rgb\"": 'null',
                             "\"display_order\"": 0}}
 
                     atributstr.append(incluyestr)
@@ -4524,35 +4540,47 @@ class ProductTemplate(models.Model):
 
                 observaciones = self.observaciones
                 if vals.get('observaciones'):
+                    id_observaciones = self.env['observaciones.zeigen'].search([('id', '=', vals['observaciones'])])
+                    observaciones = id_observaciones[0]
 
-                    if observaciones == False:
-                        observaciones = ''
+                    observaciones_show = ''
 
+                    if observaciones.nombre == False:
+                        observaciones.nombre = ''
+
+                    if observaciones.show_on_product_page:
+                        observaciones_show = "true"
+                    else:
+                        observaciones_show = "false"
 
                     observacionesstr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null',
                                         "\"allow_filtering\"": 'false',
-                                        "\"show_on_product_page\"": 'true', "\"display_order\"": 1,
-                                        "\"attribute_type\"": "\"Custom text\"", "\"specification_attribute_option\"": {
+                                        "\"show_on_product_page\"": observaciones_show, "\"display_order\"": 1,
+                                        "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
                             "\"specification_attribute_id\"": 102,
-                            "\"name\"": "\"" + str(observaciones) + "\"", "\"color_squares_rgb\"": 'null',
+                            "\"name\"": "\"" + str(observaciones.display_name) + "\"", "\"color_squares_rgb\"": 'null',
                             "\"display_order\"": 0}}
 
                     atributstr.append(observacionesstr)
 
                 if vals.get('observaciones') == False:
+                    observaciones.nombre = ''
 
-                    observaciones = ''
-
+                    if observaciones.show_on_product_page:
+                        observaciones_show = "true"
+                    else:
+                        observaciones_show = "false"
 
                     observacionesstr = {'\'attribute_type_id\'': 0, "\"custom_value\"": 'null',
                                         "\"allow_filtering\"": 'false',
-                                        "\"show_on_product_page\"": 'true', "\"display_order\"": 1,
-                                        "\"attribute_type\"": "\"Custom text\"", "\"specification_attribute_option\"": {
+                                        "\"show_on_product_page\"": observaciones_show, "\"display_order\"": 1,
+                                        "\"attribute_type\"": "\"Option\"", "\"specification_attribute_option\"": {
                             "\"specification_attribute_id\"": 102,
-                            "\"name\"": "\"" + str(observaciones) + "\"", "\"color_squares_rgb\"": 'null',
+                            "\"name\"": "\"" + str(observaciones.display_name) + "\"", "\"color_squares_rgb\"": 'null',
                             "\"display_order\"": 0}}
 
                     atributstr.append(observacionesstr)
+
 
                 capaci = self.capaci
                 if vals.get('capaci'):
@@ -4835,10 +4863,10 @@ class ProductTemplate(models.Model):
                                 "short_description": str(short_description),
                                 "full_description": "<strong>" + str(full_description) + "</strong>",
                                 "stock_quantity": stock_quantity,
-                                "disable_buy_button": str(disable_buy_button),
+                                "disable_buy_button": disable_buy_button,
                                 "price": str(price),
                                 "old_price": str(old_price),
-                                "published": str(published),
+                                "published": published,
                                 "weight": str(weight),
                                 "length": str(length),
                                 "width": str(width),
@@ -4871,7 +4899,7 @@ class ProductTemplate(models.Model):
                             "disable_buy_button": self.disable_buy_button,
                             "price": str(self.list_price),
                             "old_price":str(self.old_price),
-                            "published":str(self.published),
+                            "published":self.published,
                             "weight":str(self.weight),
                             "length":str(self.length),
                             "width":str(self.width),
