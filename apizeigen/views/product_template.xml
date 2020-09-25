@@ -11,7 +11,7 @@
                         <field name="sku"/>
                         <field name="sitio"/>
                         <field name="web_name"/>
-                        <field name="product_cost"  />
+
                         <field name="short_description"/>
                         <field name="full_description"/>
                         <field name="stock_quantity" />
@@ -33,8 +33,6 @@
 
                 <page string="Atributos sitio WEP">
                     <group string="Atributos en sitio web">
-                        <field name="marca"/>
-                        <field name="subcategoria"/>
                         <field name="marca"/>
                         <field name="subcategoria"/>
                         <field name="marcasanatom"/>
