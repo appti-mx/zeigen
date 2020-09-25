@@ -35,7 +35,7 @@ class ProductTemplate(models.Model):
     short_description = fields.Text(string='Descripción corta')
     full_description = fields.Text(string='Descripción larga sitio')
     stock_quantity = fields.Float(string='Cantidad en Inventario', related='qty_available')
-    disable_buy_button = fields.Boolean('Habilita botón de compra')
+    disable_buy_button = fields.Boolean('Deshabilitar botón de compra')
     old_price = fields.Float(string='Precio anterior del producto')
     published = fields.Boolean('Publicado en Tecnofin')
     weight = fields.Float(string='Peso')
