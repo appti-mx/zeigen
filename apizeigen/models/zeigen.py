@@ -164,7 +164,7 @@ class ProductTemplate(models.Model):
 
 
     @api.model_create_multi
-    def v_create(self, vals_list):
+    def create(self, vals_list):
 
         datos = vals_list[0]
 
@@ -252,7 +252,7 @@ class ProductTemplate(models.Model):
         self.category_name = str(self.x_familia)
 
     # @api.multi
-    def v_write(self, vals):
+    def write(self, vals):
         sitio = []
 
         sitio = self.sitio
