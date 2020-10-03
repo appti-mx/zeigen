@@ -256,8 +256,8 @@ class ProductTemplate(models.Model):
         sitio = []
 
         sitio = self.sitio
-        if vals.get('sitio'):
-            sitio = vals['sitio']
+        if vals.get('sitio') == False:
+            sitio = False
 
 
         if sitio:
