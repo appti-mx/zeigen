@@ -4979,7 +4979,7 @@ class PurchaseOrder(models.Model):
 
             line.update({
                 'porcentaje': incrementable * vals['product_qty'],
-                'gastos': vals['gastos'],
+                'gastos': ((subtotal_proveedor * vals['product_qty']) * self.gastos)/100,
                 'costomx': (vals['gastos'] +subtotal_proveedor) * vals['product_qty'],
                 'unitariomx': (vals['gastos'] + subtotal_proveedor),
                 'psugerido': ((vals['gastos'] + subtotal_proveedor) * line.ganancia) / 0.7,
@@ -5028,7 +5028,8 @@ class PurchaseOrder(models.Model):
 
             line.update({
                 'porcentaje': incrementable * vals['product_qty'],
-                'gastos': vals['gastos'],
+                #'gastos': vals['gastos'],
+                'gastos': ((subtotal_proveedor * vals['product_qty']) * self.gastos) / 100,
                 'costomx': (vals['gastos'] +subtotal_proveedor) * vals['product_qty'],
                 'unitariomx': (vals['gastos'] + subtotal_proveedor),
                 'psugerido': ((vals['gastos'] + subtotal_proveedor) * line.ganancia) / 0.7,
@@ -5054,17 +5055,28 @@ class PurchaseOrder(models.Model):
         amount_untaxed_a = amount_tax_a = porcentaje_a = subtotal_proveedor_a = 0.0
 
         for line in order.order_line:
-            amount_untaxed = amount_tax = porcentaje = subtotal_proveedor = 0.0
+            amount_untaxed = amount_tax = porcentaje = subtotal_proveedor = costomx = gastos = unitariomx = 0.0
             amount_untaxed += line.price_unit
             amount_tax += line.price_tax
             porcentaje += line.porcentaje
             subtotal_proveedor += line.subtotal_proveedor
+            costomx += line.costomx
+            gastos += line.gastos
+            unitariomx += line.unitariomx
 
             if order.currency_id.id != self.user_id.currency_id:
                 amount_untaxed = order.currency_id._convert(amount_untaxed, self.user_id.currency_id, self.user_id.company_id, self.date_order)
                 amount_tax = order.currency_id._convert(amount_tax, self.user_id.currency_id, self.user_id.company_id, self.date_order)
                 porcentaje = order.currency_id._convert(porcentaje, self.user_id.currency_id, self.user_id.company_id, self.date_order)
                 subtotal_proveedor = order.currency_id._convert(subtotal_proveedor, self.user_id.currency_id, self.user_id.company_id, self.date_order)
+
+                costomx = order.currency_id._convert(costomx, self.user_id.currency_id, self.user_id.company_id, self.date_order)
+                gastos = order.currency_id._convert(gastos, self.user_id.currency_id, self.user_id.company_id, self.date_order)
+                unitariomx = order.currency_id._convert(unitariomx, self.user_id.currency_id, self.user_id.company_id, self.date_order)
+
+                #line.costomx = costomx
+                #line.gastos = gastos
+                line.costomxb = costomx
 
                 # line.price_subtotal =  subtotal_proveedor
                 line.price_subtotal = subtotal_proveedor + amount_tax
@@ -5078,7 +5090,7 @@ class PurchaseOrder(models.Model):
                 all_records = self.env['stock.valuation.layer'].search(
                     [('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
 
-                all_records.value = line.costomx
+                all_records.value = line.costomxb
 
         order.update({
             'amount_untaxed': order.currency_id.round(subtotal_proveedor_a),
@@ -5099,6 +5111,7 @@ class PurchaseOrderLine(models.Model):
     preciourl = fields.Float('Nuevo precio')
     gastos = fields.Float('Gastos')
     costomx = fields.Float('Costo MX')
+    costomxb = fields.Float('Costo MX')
     unitariomx = fields.Float('Unitario MX')
     ganancia = fields.Float('Ganancia')
     psugerido = fields.Float('Precio sugerido')
@@ -5147,7 +5160,8 @@ class PurchaseOrderLine(models.Model):
 
             line.update({
                 'porcentaje': incrementable * vals['product_qty'],
-                'gastos': vals['gastos'] ,
+                #'gastos': vals['gastos'],
+                'gastos': ((subtotal_proveedor * vals['product_qty']) * self.order_id.gastos)/100,
                 'costomx': (vals['gastos'] +subtotal_proveedor) * vals['product_qty'],
                 'unitariomx': (vals['gastos'] + subtotal_proveedor),
                 'psugerido': ((vals['gastos'] + subtotal_proveedor)*line.ganancia)/0.7,
