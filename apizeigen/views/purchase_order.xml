@@ -27,6 +27,7 @@
                     <field name="preciourl"/>
                     <field name="gastos"/>
                     <field name="costomx"/>
+                    <field name="costomxb"/>
                     <field name="unitariomx"/>
                     <field name="ganancia"/>
                     <field name="psugerido"/>
