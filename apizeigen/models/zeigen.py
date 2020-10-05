@@ -5076,7 +5076,7 @@ class PurchaseOrder(models.Model):
 
                 #line.costomx = costomx
                 #line.gastos = gastos
-                line.costomxb = costomx
+                line.costomxb = costomx + amount_tax
 
                 # line.price_subtotal =  subtotal_proveedor
                 line.price_subtotal = subtotal_proveedor + amount_tax
