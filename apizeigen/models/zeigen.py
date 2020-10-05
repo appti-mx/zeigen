@@ -5150,7 +5150,7 @@ class PurchaseOrderLine(models.Model):
                 'gastos': vals['gastos'] ,
                 'costomx': (vals['gastos'] +subtotal_proveedor) * vals['product_qty'],
                 'unitariomx': (vals['gastos'] + subtotal_proveedor),
-                'psugerido': ((vals['gastos'] + subtotal_proveedor)*self.ganancia)/0.7,
+                'psugerido': ((vals['gastos'] + subtotal_proveedor)*line.ganancia)/0.7,
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
                 'price_subtotal': (subtotal_proveedor * vals['product_qty']),
