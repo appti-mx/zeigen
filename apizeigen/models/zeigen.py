@@ -4981,7 +4981,8 @@ class PurchaseOrder(models.Model):
                 'porcentaje': incrementable * vals['product_qty'],
                 'gastos': ((subtotal_proveedor * vals['product_qty']) * self.gastos)/100,
                 'costomx': (vals['gastos'] +subtotal_proveedor) * vals['product_qty'],
-                'unitariomx': (vals['gastos'] + subtotal_proveedor),
+                #'unitariomx': (vals['gastos'] + subtotal_proveedor),
+                'unitariomx': (vals['gastos'] + subtotal_proveedor) + sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'psugerido': ((vals['gastos'] + subtotal_proveedor) * line.ganancia) / 0.7,
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
@@ -5031,7 +5032,8 @@ class PurchaseOrder(models.Model):
                 #'gastos': vals['gastos'],
                 'gastos': ((subtotal_proveedor * vals['product_qty']) * self.gastos) / 100,
                 'costomx': (vals['gastos'] +subtotal_proveedor) * vals['product_qty'],
-                'unitariomx': (vals['gastos'] + subtotal_proveedor),
+                #'unitariomx': (vals['gastos'] + subtotal_proveedor),
+                'unitariomx': (vals['gastos'] + subtotal_proveedor) + sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'psugerido': ((vals['gastos'] + subtotal_proveedor) * line.ganancia) / 0.7,
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
@@ -5079,7 +5081,7 @@ class PurchaseOrder(models.Model):
                 line.costomxb = costomx + amount_tax
 
                 # line.price_subtotal =  subtotal_proveedor
-                line.price_subtotal = subtotal_proveedor + amount_tax
+                line.price_subtotal = subtotal_proveedor
 
                 amount_untaxed_a += amount_untaxed
                 amount_tax_a += amount_tax
@@ -5163,7 +5165,7 @@ class PurchaseOrderLine(models.Model):
                 #'gastos': vals['gastos'],
                 'gastos': ((subtotal_proveedor * vals['product_qty']) * self.order_id.gastos)/100,
                 'costomx': (vals['gastos'] +subtotal_proveedor) * vals['product_qty'],
-                'unitariomx': (vals['gastos'] + subtotal_proveedor),
+                'unitariomx': (vals['gastos'] + subtotal_proveedor) + sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'psugerido': ((vals['gastos'] + subtotal_proveedor)*line.ganancia)/0.7,
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
