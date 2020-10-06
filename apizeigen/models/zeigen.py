@@ -4991,7 +4991,7 @@ class PurchaseOrder(models.Model):
                 'subtotal_proveedor': subtotal_proveedor * vals['product_qty'],
             })
 
-            line.unitariomx = (line.price_total * self.order_id.gastos) / 100
+            line.unitariomx = (line.price_total * self.gastos) / 100
             line.costomx = line.price_total + line.unitariomx
 
             if line.move_ids.ids != []:
@@ -5045,7 +5045,7 @@ class PurchaseOrder(models.Model):
                 'subtotal_proveedor': subtotal_proveedor * vals['product_qty'],
             })
 
-            line.unitariomx = (line.price_total * self.order_id.gastos) / 100
+            line.unitariomx = (line.price_total * self.gastos) / 100
             line.costomx = line.price_total + line.unitariomx
 
             if line.move_ids.ids != []:
