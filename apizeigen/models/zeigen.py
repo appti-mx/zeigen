@@ -5081,7 +5081,7 @@ class PurchaseOrder(models.Model):
                 line.costomxb = costomx + amount_tax
 
                 # line.price_subtotal =  subtotal_proveedor
-                line.price_subtotal = subtotal_proveedor
+                line.price_subtotal = subtotal_proveedor + + amount_tax
 
                 amount_untaxed_a += amount_untaxed
                 amount_tax_a += amount_tax
