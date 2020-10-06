@@ -4991,6 +4991,9 @@ class PurchaseOrder(models.Model):
                 'subtotal_proveedor': subtotal_proveedor * vals['product_qty'],
             })
 
+            line.unitariomx = (line.price_total * self.order_id.gastos) / 100
+            line.costomx = line.price_total + line.unitariomx
+
             if line.move_ids.ids != []:
                 all_records = self.env['stock.valuation.layer'].search(
                     [('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
@@ -5033,7 +5036,7 @@ class PurchaseOrder(models.Model):
                 'gastos': ((subtotal_proveedor * vals['product_qty']) * self.gastos) / 100,
                 'costomx': (vals['gastos'] +subtotal_proveedor) * vals['product_qty'],
                 #'unitariomx': (vals['gastos'] + subtotal_proveedor),
-                'unitariomx': (vals['gastos'] + subtotal_proveedor) + sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
+                'unitariomx': (vals['gastos'] + subtotal_proveedor),
                 'psugerido': ((vals['gastos'] + subtotal_proveedor) * line.ganancia) / 0.7,
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
@@ -5041,6 +5044,9 @@ class PurchaseOrder(models.Model):
                 # 'price_subtotal': (vals['price_unit'] * vals['product_qty']),
                 'subtotal_proveedor': subtotal_proveedor * vals['product_qty'],
             })
+
+            line.unitariomx = (line.price_total * self.order_id.gastos) / 100
+            line.costomx = line.price_total + line.unitariomx
 
             if line.move_ids.ids != []:
                 all_records = self.env['stock.valuation.layer'].search(
@@ -5067,18 +5073,21 @@ class PurchaseOrder(models.Model):
             unitariomx += line.unitariomx
 
             if order.currency_id.id != self.user_id.currency_id:
+
                 amount_untaxed = order.currency_id._convert(amount_untaxed, self.user_id.currency_id, self.user_id.company_id, self.date_order)
                 amount_tax = order.currency_id._convert(amount_tax, self.user_id.currency_id, self.user_id.company_id, self.date_order)
                 porcentaje = order.currency_id._convert(porcentaje, self.user_id.currency_id, self.user_id.company_id, self.date_order)
                 subtotal_proveedor = order.currency_id._convert(subtotal_proveedor, self.user_id.currency_id, self.user_id.company_id, self.date_order)
 
                 costomx = order.currency_id._convert(costomx, self.user_id.currency_id, self.user_id.company_id, self.date_order)
-                gastos = order.currency_id._convert(gastos, self.user_id.currency_id, self.user_id.company_id, self.date_order)
+                #gastos = order.currency_id._convert(gastos, self.user_id.currency_id, self.user_id.company_id, self.date_order)
                 unitariomx = order.currency_id._convert(unitariomx, self.user_id.currency_id, self.user_id.company_id, self.date_order)
 
+
+
                 #line.costomx = costomx
-                #line.gastos = gastos
-                line.costomxb = costomx + amount_tax
+                line.unitariomxb = unitariomx
+                line.costomxb = costomx
 
                 # line.price_subtotal =  subtotal_proveedor
                 line.price_subtotal = subtotal_proveedor + amount_tax
@@ -5092,7 +5101,7 @@ class PurchaseOrder(models.Model):
                 all_records = self.env['stock.valuation.layer'].search(
                     [('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
 
-                all_records.value = line.price_subtotal
+                all_records.value = line.costomxb
 
         order.update({
             'amount_untaxed': order.currency_id.round(subtotal_proveedor_a),
@@ -5113,8 +5122,9 @@ class PurchaseOrderLine(models.Model):
     preciourl = fields.Float('Nuevo precio')
     gastos = fields.Float('Gastos')
     costomx = fields.Float('Costo MX')
-    costomxb = fields.Float('Costo MX')
+    costomxb = fields.Float('Cst MX')
     unitariomx = fields.Float('Unitario MX')
+    unitariomxb = fields.Float('Unt MX')
     ganancia = fields.Float('Ganancia')
     psugerido = fields.Float('Precio sugerido')
     pactual = fields.Float('Precio actual', related='product_id.lst_price')
@@ -5140,6 +5150,8 @@ class PurchaseOrderLine(models.Model):
             vals = line._prepare_compute_all_values()
 
             if self.order_id.incrementables > 0:
+
+
                 incrementable = (vals['price_unit'] * self.order_id.incrementables / 100)
 
                 unitario = vals['price_unit'] + incrementable
@@ -5163,9 +5175,9 @@ class PurchaseOrderLine(models.Model):
             line.update({
                 'porcentaje': incrementable * vals['product_qty'],
                 #'gastos': vals['gastos'],
-                'gastos': ((subtotal_proveedor * vals['product_qty']) * self.order_id.gastos)/100,
-                'costomx': (vals['gastos'] +subtotal_proveedor) * vals['product_qty'],
-                'unitariomx': (vals['gastos'] + subtotal_proveedor) + sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
+                'gastos': (((subtotal_proveedor) * vals['product_qty']) * self.order_id.gastos)/100,
+                'costomx': ((vals['gastos'] + subtotal_proveedor) * vals['product_qty']),
+                'unitariomx':  vals['gastos'],
                 'psugerido': ((vals['gastos'] + subtotal_proveedor)*line.ganancia)/0.7,
                 'price_tax': sum(t.get('amount', 0.0) for t in taxes.get('taxes', [])),
                 'price_total': taxes['total_included'],
@@ -5173,6 +5185,11 @@ class PurchaseOrderLine(models.Model):
                 # 'price_subtotal': (vals['price_unit'] * vals['product_qty']),
                 'subtotal_proveedor': subtotal_proveedor * vals['product_qty'],
             })
+
+
+            line.unitariomx = (line.price_total * self.order_id.gastos)/100
+            line.costomx = line.price_total + line.unitariomx
+
 
             if line.move_ids.ids != []:
                 all_records = self.env['stock.valuation.layer'].search(
