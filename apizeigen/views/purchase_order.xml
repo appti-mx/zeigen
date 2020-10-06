@@ -29,6 +29,7 @@
                     <field name="costomx"/>
                     <field name="costomxb"/>
                     <field name="unitariomx"/>
+                    <field name="unitariomxb"/>
                     <field name="ganancia"/>
                     <field name="psugerido"/>
                     <field name="pactual"/>
