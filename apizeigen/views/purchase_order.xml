@@ -10,6 +10,7 @@
                     expr="//field[@name='date_order']"
                     position="after">
                     <field name="incrementables"/>
+                    <field name="gastos"/>
                 </xpath>
 
                 <xpath
@@ -23,8 +24,18 @@
                     position="after">
                     <field name="porcentaje"/>
                     <field name="subtotal_proveedor"/>
+                    <field name="preciourl"/>
+                    <field name="gastos"/>
+                    <field name="costomx"/>
+                    <field name="costomxb"/>
+                    <field name="unitariomx"/>
+                    <field name="unitariomxb"/>
+                    <field name="ganancia"/>
+                    <field name="psugerido"/>
+                    <field name="pactual"/>
                 </xpath>
             </data>
         </field>
     </record>
+
 </odoo>
