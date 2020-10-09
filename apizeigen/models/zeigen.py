@@ -5101,7 +5101,8 @@ class PurchaseOrder(models.Model):
                 all_records = self.env['stock.valuation.layer'].search(
                     [('product_id', '=', line.product_id.id), ('stock_move_id', '=', line.move_ids.ids[0])])
 
-                all_records.value = line.costomxb
+                #all_records.value = line.costomxb
+                all_records.value = line.price_subtotal
 
         order.update({
             'amount_untaxed': order.currency_id.round(subtotal_proveedor_a),
