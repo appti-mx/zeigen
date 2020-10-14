@@ -5129,6 +5129,7 @@ class PurchaseOrderLine(models.Model):
     ganancia = fields.Float('Ganancia')
     psugerido = fields.Float('Precio sugerido')
     pactual = fields.Float('Precio actual', related='product_id.lst_price')
+    panterior = fields.Float('Precio anterior')
 
 
 
@@ -5136,6 +5137,12 @@ class PurchaseOrderLine(models.Model):
     def _onchange_preciourl(self):
 
         self.product_id.product_tmpl_id.price = self.preciourl
+        
+        
+    @api.onchange('panterior')
+    def _onchange_panterior(self):
+
+        self.product_id.product_tmpl_id.old_price = self.panterior
 
 
 
