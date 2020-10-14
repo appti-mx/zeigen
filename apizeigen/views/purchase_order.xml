@@ -33,6 +33,7 @@
                     <field name="ganancia"/>
                     <field name="psugerido"/>
                     <field name="pactual"/>
+                    <field name="panterior"/>
                 </xpath>
             </data>
         </field>
